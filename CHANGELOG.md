@@ -5,7 +5,15 @@
 - 新增公开、可移植的 `prompts/web/ONE_PASTE_T1_T9_COORDINATOR_PROMPT.md` 0.3.0：输入一个问题仓 URL，首次回复严格输出九个 T1–T9 Candidate 研究提示词代码块。
 - 提示词明确 verifier-side trusted challenge、Candidate/challenge source separation、trusted typed identity、independent semantic faithfulness，以及 native `lean-kernel` 与 sandbox-external replay 的不同 trust domain。
 - 该公共派生不包含私密研究状态、执行记录或内部发布身份，不启动 worker、不准入 verifier、不签 Evidence/Result，也不表示任何 Suite/Harness 已发布或 fleet 已 rollout。
-- 本分支仅准备源码；公开仓检查、PR、merge 和 push 尚未执行。
+- public `make check` 已通过，publication manifest 为 `ready_for_pr_review`；尚未 push、merge 或 rollout。
+
+## 2026-09-09 — Project #2 Top-146 赏金问题仓库快照
+
+- 从 GitHub Project #2 View 3 fresh-read 234 条 Award record，按 `USD Equivalent DESC`、`Title ASC` 排序，并按 Repository URL 去重，发布前 146 个唯一问题仓库的 JSON 与人类可读索引。
+- 保留原币种、名义金额、USD 折算、FX 日期、来源状态、Award 状态、支付未知状态和 Award ID；同一仓库的多个 Award record 不相加。
+- 明确严格 `USD Equivalent > 100` 的唯一仓库数量与 Top 146 边界不同；为满足 146 个仓库目标，快照透明保留 USD 100.00 边界行。
+- 同步 README、英文 README、公共问题索引、GEO、LLM 检索摘要、实体卡和公共声明；Project、仓库、Issue、PR、CI、checkpoint 与赏金字段仍不是 Evidence、Result 或 Solution。
+- 明确 `secp256k1` 是独立密码学复杂性审计问题，不属于六个千禧年问题。
 
 ## 2026-09-07 — 公共 README、AI 发现与 GEO 维护面
 

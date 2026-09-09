@@ -10,6 +10,7 @@ problem-library/
 ├── RESEARCH_CANDIDATES.md       # 候选来源范围与许可边界
 ├── OVERVIEW.md                  # 公开能力与资源路径图
 ├── VIBEMATHING_PUBLIC_INDEX.md  # 外部具体问题库与网页版模板入口
+├── BOUNTY_PROJECT_2_TOP146.md   # Project #2 View 3 的带日期赏金仓库快照
 ├── templates/                   # 可复制的 draft ProblemContract 模板
 ├── schema/
 │   ├── problem.schema.json
@@ -17,6 +18,7 @@ problem-library/
 │   ├── candidate-source.schema.json
 │   └── candidate-observation.schema.json
 ├── registry/candidate-sources.json
+├── registry/bounty-project-2-top146.v1.json
 ├── registry/vibemathing-public-source.v1.json
 ├── raw/                         # Git ignored：来源响应、inventory、失败账本
 ├── derived/candidate-observations/ # Git ignored：CandidateObservation snapshot

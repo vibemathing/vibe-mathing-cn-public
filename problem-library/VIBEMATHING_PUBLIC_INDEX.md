@@ -1,12 +1,14 @@
 # Vibe Mathing 公共具体问题索引
 
-本页把本仓库与 `https://github.com/vibemathing` 的公开问题生态接起来，但**不复制远端研究仓库**。远端内容、仓库状态和题面可能变化；下列数量与列表是基于公开 `LIBRARY_SNAPSHOT.json` / `catalog/canonical-index.json` 在 **2026-09-07** 的观察，开始研究前必须重新读取远端入口。
+本页把本仓库与 `https://github.com/vibemathing` 的公开问题生态接起来，但**不复制远端研究仓库**。远端内容、仓库状态和题面可能变化；公共 ProblemContract catalog 的数量与列表是基于 `LIBRARY_SNAPSHOT.json` / `catalog/canonical-index.json` 在 **2026-09-07** 的观察，赏金仓库排名是基于 Project #2 View 3 在 **2026-09-09** 的独立快照。开始研究前必须重新读取远端入口。
 
 ## 公开入口
 
 | 入口 | 作用 | 是否是本仓库的本地真相源 |
 | --- | --- | --- |
 | [问题仓库总览 · GitHub Project #1](https://github.com/users/vibemathing/projects/1) | 跨仓库运营索引，集中导航公开单问题仓库 | 否；Project、字段、view 和卡片不是数学 Evidence 或 Result |
+| [赏金问题地图 · GitHub Project #2 View 3](https://github.com/users/vibemathing/projects/2/views/3) | 带日期的赏金与问题仓库运营索引 | 否；金额、Award、字段、view 和卡片不是数学 Evidence 或 Result |
+| [`Project #2 Top 146 快照`](BOUNTY_PROJECT_2_TOP146.md) | 146 个去重后的问题仓库及其原币种/来源元数据 | 否；只读 pointer-only 快照，不自动导入 ProblemContract |
 | [`vibe-mathing-problem-library-public`](https://github.com/vibemathing/vibe-mathing-problem-library-public) | 问题总库：公开的 ProblemContract 发现与准入目录 | 否；它是外部来源，不能自动写入本仓库 canonical ledger |
 | [`vibe-mathing-problem-public-template`](https://github.com/vibemathing/vibe-mathing-problem-public-template) | 单问题网页版研究模板，含固定 Web research Harness | 否；模板和 transport 不能自动产生 Result |
 | [`vibemathing` 公开仓库列表](https://github.com/vibemathing?tab=repositories) | 具体 `problem-*` 研究仓库的导航入口 | 否；仓库名只是 locator，不是数学结论 |
@@ -24,6 +26,12 @@
 | 千禧年问题 | 霍奇猜想 | [`problem-millennium-hodge-conjecture`](https://github.com/vibemathing/problem-millennium-hodge-conjecture) |
 | 千禧年问题 | Birch–Swinnerton-Dyer 猜想 | [`problem-millennium-birch-swinnerton-dyer`](https://github.com/vibemathing/problem-millennium-birch-swinnerton-dyer) |
 | 独立关键问题 | secp256k1 离散对数经典多项式时间性审计 | [`problem-secp256k1-ecdlog-polytime`](https://github.com/vibemathing/problem-secp256k1-ecdlog-polytime) |
+
+### Project #2 高赏金问题仓库快照
+
+[`BOUNTY_PROJECT_2_TOP146.md`](BOUNTY_PROJECT_2_TOP146.md) 是 Project #2 View 3 的人类可读排名，[`registry/bounty-project-2-top146.v1.json`](registry/bounty-project-2-top146.v1.json) 是同一快照的机器入口。选择依据是 View 3 的 `USD Equivalent DESC`、`Title ASC`，再按 Repository URL 去重，取前 146 个唯一仓库；同一仓库的多个 Award record 全部保留，不把金额相加。
+
+本次回读得到 234 条 Award record、226 个唯一 Repository URL。严格 `USD Equivalent > 100` 的唯一仓库为 141 个；为满足“前 146 个唯一仓库”的目标，排名末端保留 USD 100.00 的边界行。原币种、FX 日期、来源状态、Award 状态和支付未知状态均为带日期的来源元数据，不是可领取余额、数学证据或 Result。`secp256k1` 如出现在赏金索引中，仍是独立密码学问题，不属于千禧年问题。
 
 公共问题总库的机器入口：
 
@@ -98,4 +106,4 @@ python3 scripts/query_vibemathing_public.py --catalog
 
 ## 机器入口
 
-机器可读登记见 [`registry/vibemathing-public-source.v1.json`](registry/vibemathing-public-source.v1.json)。它是 pointer-only registry，不是远端仓库镜像；修改上游地址、模板版本、快照数量或导入策略时，必须更新观察日期并重新运行公共边界检查。
+机器可读登记见 [`registry/vibemathing-public-source.v1.json`](registry/vibemathing-public-source.v1.json)；其中的 `bounty_project_index` 指向 Project #2 及 Top 146 快照。它们是 pointer-only registry/snapshot，不是远端仓库镜像；修改上游地址、模板版本、快照数量或导入策略时，必须更新观察日期并重新运行公共边界检查。

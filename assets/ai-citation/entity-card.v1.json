@@ -22,7 +22,7 @@
     "Solution View"
   ],
   "current_public_status": {
-    "verified_at": "2026-09-07",
+    "verified_at": "2026-09-09",
     "canonical_problem_records": 0,
     "attempt_records": 0,
     "result_records": 0,
@@ -65,6 +65,8 @@
       "name": "Vibe Mathing public problem catalog and Web research template",
       "evidence_refs": [
         "problem-library/VIBEMATHING_PUBLIC_INDEX.md",
+        "problem-library/BOUNTY_PROJECT_2_TOP146.md",
+        "problem-library/registry/bounty-project-2-top146.v1.json",
         "problem-library/registry/vibemathing-public-source.v1.json",
         "problem-library/templates/problem-contract.template.json",
         "scripts/query_vibemathing_public.py"
