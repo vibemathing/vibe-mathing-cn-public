@@ -76,6 +76,7 @@
 - [状态模型：结果 × 证据](#状态模型结果-证据)
 - [解库准入](#解库准入)
 - [当前能力](#当前能力)
+- [Web GPT 九路元提示词](#web-gpt-九路元提示词)
 - [快速开始](#快速开始)
 - [FAQ](#faq)
 - [机器可读入口与引用](#机器可读入口与引用)
@@ -368,10 +369,11 @@ vibe-mathing-cn/
 | 文献与定义检索 | [`literature/README.md`](literature/README.md)、[`providers.json`](literature/providers.json) | provider registry 不是 live 请求证明；凭据和全文不进入公开记录。 |
 | SymPy 计算 | [`sympy-counterexample/`](fixtures/sympy-counterexample/)、[`test_vibe_mathing_pipeline.py`](scripts/test_vibe_mathing_pipeline.py) | 可重跑的有界精确算术 Fixture，不证明一般定理。 |
 | SMT / canary vertical slice | [`smt-lra/case.json`](fixtures/smt-lra/case.json)、[`test_smt_pipeline.py`](scripts/test_smt_pipeline.py) | 覆盖正例、反例、错误和 timeout 协议；canary 不创建数学 Result。 |
-| Lean / Mathlib 形式化 | [`fixtures/lean-proof/README.md`](fixtures/lean-proof/README.md)、[`test_lean_pipeline.py`](scripts/test_lean_pipeline.py) | kernel、axiom/escape 和 statement faithfulness 是不同门；不自动验证自然语言题面。 |
+| Lean / Mathlib 形式化 | [`fixtures/lean-proof/README.md`](fixtures/lean-proof/README.md)、[`test_lean_pipeline.py`](scripts/test_lean_pipeline.py) | kernel、axiom/escape、typed statement identity、independent statement faithfulness、freshness 和 external replay 是不同门；不自动验证自然语言题面。 |
 | `/vibe-mathing` 单机入口 | [`vibe_mathing_cli.py`](scripts/vibe_mathing_cli.py)、[`test_vibe_mathing_runtime.py`](scripts/test_vibe_mathing_runtime.py) | 只接受已注册 adapter，具备 checkpoint、timeout、预算和取消语义。 |
 | 工具成熟度 registry | [`math-tool-maturity.v1.json`](governance/control-plane/math-tool-maturity.v1.json)、[`validate_math_tool_maturity.py`](scripts/validate_math_tool_maturity.py) | 41 个工具族状态是证据状态机，不等于当前安装、可执行或 verifier 准入。 |
 | 六个 Active Skills | [`.codex/skills/README.md`](.codex/skills/README.md)、[`validate_project.py`](scripts/validate_project.py) | owner skill 生成候选和研究计划，不能自行宣布数学结论。 |
+| Web GPT 九路元提示词 | [`ONE_PASTE_T1_T9_COORDINATOR_PROMPT.md`](prompts/web/ONE_PASTE_T1_T9_COORDINATOR_PROMPT.md)、[`prompts/README.md`](prompts/README.md) | 只生成 T1–T9 Candidate 研究提示词；不启动 worker、不绕过仓库准入、不签 Evidence/Result。 |
 | CI 与公共边界 | [`check.sh`](scripts/check.sh)、[`PUBLIC_REPOSITORY_BOUNDARY.md`](governance/processes/PUBLIC_REPOSITORY_BOUNDARY.md) | `make check` 验证工程链路；通过不等于外部数学认证或开放问题已解决。 |
 
 ## Active Skills
@@ -399,6 +401,14 @@ vibe-mathing-router
 ```
 
 每次只选择当前最需要的一个主 skill，避免把检索、计算、证明和形式化同时启动后互相掩盖缺口。
+
+## Web GPT 九路元提示词
+
+公共零门槛入口位于 [`prompts/web/ONE_PASTE_T1_T9_COORDINATOR_PROMPT.md`](prompts/web/ONE_PASTE_T1_T9_COORDINATOR_PROMPT.md)。用户给出一个问题仓库 URL，Coordinator 首次回复只生成九个自包含 T1–T9 代码块。它是只读、Candidate-planning 合同，不创建仓库 Task/Job/worker，也不代表受控问题仓的 Attempt/Route/Obligation 已准入。
+
+每个生成的 Worker 提示词必须把未审查 AI Lean source 当作 potentially malicious input，保持 verifier-side trusted challenge 与 Candidate source 分离，用 trusted typed probe 请求 statement identity，并把 independent semantic faithfulness、toolchain freshness、native fresh replay 与 sandbox-external replay 分开。`leanchecker --fresh` 仍属于 `lean-kernel` trust domain；缺工具、未准入 route、超时、stale 或 digest 漂移只得到 `blocked/undetermined`。
+
+公开提示词版本不等于任何私有 Suite/Harness 已发布或 fleet 已 rollout。若具体问题仓提供严格 `WEB_COORDINATOR.md`，其 fresh pre-admission 和 identity-bound runnable prompt 合同仍须单独遵守。
 
 ## 快速开始
 
@@ -526,6 +536,7 @@ vibe-mathing-cn-public/
 ├── .github/workflows/         # GitHub Actions 可移植质量门
 ├── .codex/skills/             # 当前项目 active skills
 ├── scripts/                   # 供应链、结构、问题库、文献库和数学验证脚本
+├── prompts/                  # 公开、可移植、Candidate-only 提示词规格
 ├── fixtures/                  # 固定 Lean/Mathlib 等无业务数据验证样例
 └── vendor/
     ├── sources.lock.json      # 上游来源、固定 commit、许可和导入映射
@@ -543,6 +554,7 @@ vibe-mathing-cn-public/
 - [`result-library/README.md`](result-library/README.md)：Result 晋升与解库派生规则；
 - [`governance/README.md`](governance/README.md)：项目治理和上下文入口；
 - [`scripts/README.md`](scripts/README.md)：项目脚本职责；
+- [`prompts/README.md`](prompts/README.md)：公开提示词范围、使用方式与非授权边界；
 - [`vendor/README.md`](vendor/README.md)：研究 skill 供应链与审计边界；
 - [`governance/tools/MATH_TOOL_CATALOG.md`](governance/tools/MATH_TOOL_CATALOG.md)：公开工具族目录（严格两列）；
 - [`assets/ai-citation/`](assets/ai-citation/)：面向人和 AI 的摘要、术语、FAQ 与 GEO 评估协议；

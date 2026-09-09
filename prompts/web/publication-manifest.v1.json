@@ -1,0 +1,20 @@
+{
+  "schema_version": "public-web-prompt-publication.v1",
+  "prompt_id": "task-0027-one-paste-t1-t9-coordinator-prompt",
+  "prompt_version": "0.3.0",
+  "prompt_path": "prompts/web/ONE_PASTE_T1_T9_COORDINATOR_PROMPT.md",
+  "prompt_sha256": "929d3e7a4524dc16534214f1ad0f74e077a116334884fa1e595feb133822be35",
+  "conceptual_root": "PLFB",
+  "authority": "candidate-public-derivative",
+  "source_status": "validated_public_source",
+  "release_status": "ready_for_pr_review",
+  "capability_claims": {
+    "worker_launched": false,
+    "repository_admitted": false,
+    "verifier_admitted": false,
+    "evidence_signed": false,
+    "result_admitted": false,
+    "fleet_rollout": false
+  },
+  "publication_boundary": "governance/processes/PUBLIC_REPOSITORY_BOUNDARY.md"
+}

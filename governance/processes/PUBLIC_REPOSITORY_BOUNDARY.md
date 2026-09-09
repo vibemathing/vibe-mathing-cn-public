@@ -20,6 +20,7 @@ review_cycle: P90D
 - 合成 fixture、攻击负例和可重复测试；
 - 已完成许可审计的最小供应链元数据；
 - 不包含私密运行事实的公开文档；
+- public、portable、Candidate-only 的提示词规格；其不得携带运行授权、私密状态或 verifier/Result 声明；
 - 经公开准入门验证且明确批准发布的 Result 与证据。
 
 ## 禁止内容
