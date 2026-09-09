@@ -34,10 +34,11 @@ The dated [`Project #2 View 3 snapshot`](problem-library/BOUNTY_PROJECT_2_TOP146
 
 The six Millennium entries remain a separate category. The cryptographic `secp256k1` entry is an independent complexity-audit problem and is not part of the Millennium Problems.
 
-The table below directly lists the first 146 unique problem repositories in Project #2 View 3 order. The added bounty column preserves the original currency and includes the USD-equivalent value from this snapshot. Amounts use compact `M=millions` and `k=thousands` notation; exact values remain in the machine snapshot. Related Award records are preserved but not added; Project, repository, Issue, PR, CI, and checkpoint activity is not mathematical Evidence, Result, or Solution.
+The table first pins `secp256k1` as an independent research focus, then lists the first 146 unique problem repositories in Project #2 View 3 order. `secp256k1` is not listed in Project #2's bounty ranking, so no bounty amount is inferred for it. The added bounty column preserves the original currency and includes the USD-equivalent value from this snapshot. Amounts use compact `M=millions` and `k=thousands` notation; exact values remain in the machine snapshot. Related Award records are preserved but not added; Project, repository, Issue, PR, CI, and checkpoint activity is not mathematical Evidence, Result, or Solution.
 
 | Rank | Category | Problem / Problem Key | Bounty (original; USD reference) | Public single-problem repository |
 | ---: | --- | --- | ---: | --- |
+| Featured | Independent cryptographic focus | `secp256k1`: classical polynomial-time audit of discrete-log inversion | Bounty not listed in Project #2 | [vibemathing/problem-secp256k1-ecdlog-polytime](https://github.com/vibemathing/problem-secp256k1-ecdlog-polytime) |
 | 1 | Project #2 bounty problem | `eternity-ii`：Eternity II puzzle | USD 2M | [vibemathing/problem-eternity-ii](https://github.com/vibemathing/problem-eternity-ii) |
 | 2 | Project #2 bounty problem | `beal-million`：Beal猜想 | USD 1M | [vibemathing/problem-um-nt-078-beal-s-conjecture-c75e225d](https://github.com/vibemathing/problem-um-nt-078-beal-s-conjecture-c75e225d) |
 | 3 | Millennium problem | `clay-bsd`：Birch–Swinnerton-Dyer猜想 | USD 1M | [vibemathing/problem-millennium-birch-swinnerton-dyer](https://github.com/vibemathing/problem-millennium-birch-swinnerton-dyer) |
@@ -184,8 +185,6 @@ The table below directly lists the first 146 unique problem repositories in Proj
 | 144 | Project #2 bounty problem | `erdosproblems:104`：Erdős Problem #104 | USD 100 | [vibemathing/problem-um-ep-104-erd-s-problem-104-15bd3bf4](https://github.com/vibemathing/problem-um-ep-104-erd-s-problem-104-15bd3bf4) |
 | 145 | Project #2 bounty problem | `erdosproblems:1123`：Erdős Problem #1123 | USD 100 | [vibemathing/problem-erdosproblems-1123](https://github.com/vibemathing/problem-erdosproblems-1123) |
 | 146 | Project #2 bounty problem | `erdosproblems:119`：Erdős Problem #119 | USD 100 | [vibemathing/problem-erdosproblems-119](https://github.com/vibemathing/problem-erdosproblems-119) |
-| — | Independent cryptographic problem | `secp256k1`: classical polynomial-time audit of discrete-log inversion | Not listed in Project #2 Top 146 bounty ranking | [vibemathing/problem-secp256k1-ecdlog-polytime](https://github.com/vibemathing/problem-secp256k1-ecdlog-polytime) |
-
 `vibe-mathing-cn` organizes mathematical problems, literature, derivations, computations, proofs, and formal checks into a traceable workflow. It is not a promise to solve arbitrary open problems: an honest `open` disposition is a valid outcome.
 
 The repository's original code and documentation are released under the [MIT License](LICENSE); third-party material under `vendor/` remains subject to its own license and source lock.

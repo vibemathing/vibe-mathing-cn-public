@@ -596,6 +596,10 @@ def check_bounty_readme_tables(root: Path) -> None:
             raise CheckError(f"{relative} must contain inline Project #2 ranks 1..146")
         if "problem-secp256k1-ecdlog-polytime" not in text:
             raise CheckError(f"{relative} is missing the separate secp256k1 entry")
+        table_lines = text.splitlines()
+        header_index = next((index for index, line in enumerate(table_lines) if header in line), None)
+        if header_index is None or header_index + 2 >= len(table_lines) or "secp256k1" not in table_lines[header_index + 2]:
+            raise CheckError(f"{relative} must place secp256k1 in the first table row")
 
 
 def main() -> int:
