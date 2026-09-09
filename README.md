@@ -40,10 +40,11 @@
 
 六个千禧年条目仍单独归类。密码学 `secp256k1` 条目是独立的复杂性审计问题，不属于千禧年问题。
 
-下面表格直接按 Project #2 View 3 的排名列出前 146 个唯一问题仓库；新增的赏金列保留原币种，并附本次快照的 USD 等值。金额使用 `M=百万`、`k=千` 的紧凑记法，精确值见机器快照。重复 Award record 不相加，Project、仓库、Issue、PR、CI 和 checkpoint 仍不是数学 Evidence、Result 或 Solution。
+下面表格先置顶 `secp256k1` 作为独立重点研究入口，再按 Project #2 View 3 的排名列出前 146 个唯一问题仓库；新增的赏金列保留原币种，并附本次快照的 USD 等值。`secp256k1` 未列入 Project #2 赏金排名，因此不推断其赏金金额。金额使用 `M=百万`、`k=千` 的紧凑记法，精确值见机器快照。重复 Award record 不相加，Project、仓库、Issue、PR、CI 和 checkpoint 仍不是数学 Evidence、Result 或 Solution。
 
 | 排名 | 类别 | 问题 / Problem Key | 赏金（原币种；USD 等值） | 公开单问题仓库 |
 | ---: | --- | --- | ---: | --- |
+| 重点 | 独立密码学重点问题 | `secp256k1`：离散对数经典多项式时间性审计 | Project #2 未登记赏金 | [vibemathing/problem-secp256k1-ecdlog-polytime](https://github.com/vibemathing/problem-secp256k1-ecdlog-polytime) |
 | 1 | Project #2 赏金问题 | `eternity-ii`：Eternity II puzzle | USD 2M | [vibemathing/problem-eternity-ii](https://github.com/vibemathing/problem-eternity-ii) |
 | 2 | Project #2 赏金问题 | `beal-million`：Beal猜想 | USD 1M | [vibemathing/problem-um-nt-078-beal-s-conjecture-c75e225d](https://github.com/vibemathing/problem-um-nt-078-beal-s-conjecture-c75e225d) |
 | 3 | 千禧年问题 | `clay-bsd`：Birch–Swinnerton-Dyer猜想 | USD 1M | [vibemathing/problem-millennium-birch-swinnerton-dyer](https://github.com/vibemathing/problem-millennium-birch-swinnerton-dyer) |
@@ -190,8 +191,6 @@
 | 144 | Project #2 赏金问题 | `erdosproblems:104`：Erdős Problem #104 | USD 100 | [vibemathing/problem-um-ep-104-erd-s-problem-104-15bd3bf4](https://github.com/vibemathing/problem-um-ep-104-erd-s-problem-104-15bd3bf4) |
 | 145 | Project #2 赏金问题 | `erdosproblems:1123`：Erdős Problem #1123 | USD 100 | [vibemathing/problem-erdosproblems-1123](https://github.com/vibemathing/problem-erdosproblems-1123) |
 | 146 | Project #2 赏金问题 | `erdosproblems:119`：Erdős Problem #119 | USD 100 | [vibemathing/problem-erdosproblems-119](https://github.com/vibemathing/problem-erdosproblems-119) |
-| — | 独立密码学问题 | `secp256k1`：离散对数经典多项式时间性审计 | 未列入 Project #2 Top 146 赏金排名 | [vibemathing/problem-secp256k1-ecdlog-polytime](https://github.com/vibemathing/problem-secp256k1-ecdlog-polytime) |
-
 ## 30 秒理解
 
 | 你想知道 | 直接答案 |
