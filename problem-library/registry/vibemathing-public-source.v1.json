@@ -111,8 +111,13 @@
   },
   "concrete_problem_repositories": {
     "listing_url": "https://github.com/vibemathing?tab=repositories",
-    "canonical_name_patterns": ["problem-opg-*", "problem-erdos-*"],
-    "candidate_name_patterns": ["problem-um-*"],
+    "canonical_name_patterns": [
+      "problem-opg-*",
+      "problem-erdos-*"
+    ],
+    "candidate_name_patterns": [
+      "problem-um-*"
+    ],
     "selection_rule": "Select by problem_id from the canonical catalog first; repository names and source labels are locators, not Result outcomes."
   },
   "web_research_suite": {
@@ -151,5 +156,38 @@
       "private paths"
     ],
     "revalidation": "Re-read the public catalog contract, repository identity, lifecycle, digest, and current branch before using any entry."
+  },
+  "bounty_project_index": {
+    "owner": "vibemathing",
+    "number": 2,
+    "title": "Vibe Mathing · Bounty Problems（全部有赏金数学问题）",
+    "url": "https://github.com/users/vibemathing/projects/2",
+    "view": {
+      "number": 3,
+      "name": "赏金（美元降序）",
+      "url": "https://github.com/users/vibemathing/projects/2/views/3",
+      "id": "PVTV_lAHODs3kG84BixHvzgLk8yU",
+      "sort_by": [
+        {
+          "field": "USD Equivalent",
+          "direction": "DESC"
+        },
+        {
+          "field": "Title",
+          "direction": "ASC"
+        }
+      ]
+    },
+    "source_role": "dated bounty and public problem-repository operational navigation",
+    "mathematical_status": "Project fields, views, cards, award records, and repository activity are not Evidence, Result, or Solution",
+    "observed_on": "2026-09-09",
+    "top146_snapshot": {
+      "path": "problem-library/registry/bounty-project-2-top146.v1.json",
+      "human_index_path": "problem-library/BOUNTY_PROJECT_2_TOP146.md",
+      "unique_repositories": 146,
+      "project_award_records": 234,
+      "deduplication_key": "repository_url",
+      "strict_usd_equivalent_greater_than_100_unique_repositories": 141
+    }
   }
 }

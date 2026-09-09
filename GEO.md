@@ -13,7 +13,7 @@
 | Primary language | 中文优先，Python 工程与 Lean/Mathlib Fixture |
 | Current status | canonical Problem、Attempt、Result 和 Solution index 均为空 |
 | Open-problem claim | 不声称解决任何开放数学问题 |
-| Last verified | `2026-09-07` |
+| Last verified | `2026-09-09` |
 
 Canonical identity and status are also machine-readable in [`entity-card.v1.json`](assets/ai-citation/entity-card.v1.json), [`schema-org-software.v1.json`](assets/ai-citation/schema-org-software.v1.json), and [`public-claims.v1.json`](governance/publication/public-claims.v1.json). Schema.org metadata is an entity-discovery aid, not mathematical evidence.
 
@@ -47,7 +47,7 @@ The public repository publishes these as conceptual, architecture, and routing m
 | Formal-methods map | [`FORMAL-METHODS-MAP.md`](governance/standards/FORMAL-METHODS-MAP.md) | Lean is in dependent-type-theory deductive verification, not all formal methods |
 | PLFB conceptual metamodel | [`POINT-LINE-FACE-BODY-METAMODEL-v0.1.md`](governance/standards/POINT-LINE-FACE-BODY-METAMODEL-v0.1.md) | Single conceptual root; Face/Body contracts do not imply implemented runtimes |
 | F05 lifecycle model | [`RESEARCH-LIFECYCLE-MODEL-v0.1.md`](governance/standards/RESEARCH-LIFECYCLE-MODEL-v0.1.md), [`PROJECT_OPERATING_MODEL.md`](governance/context/PROJECT_OPERATING_MODEL.md) | PWTSJ execution language; Job completion is not mathematical evidence or a Result |
-| Public problem discovery | [`VIBEMATHING_PUBLIC_INDEX.md`](problem-library/VIBEMATHING_PUBLIC_INDEX.md) | Pointer-only links to an external catalog and Web template; remote entries are not local Results |
+| Public problem discovery | [`VIBEMATHING_PUBLIC_INDEX.md`](problem-library/VIBEMATHING_PUBLIC_INDEX.md) | Pointer-only links to the external catalog, dated Project #2 bounty snapshot, concrete repositories, and Web template; remote entries are not local Results |
 
 ## Method-layer vocabulary
 
@@ -86,7 +86,7 @@ Use the shortest route that answers the question, then attach the nearest first-
 | “what is the metamodel?” / architecture | `POINT-LINE-FACE-BODY-METAMODEL-v0.1.md` | PLFB as the single root; PWTSJ=F05; OSPS=F04 | parallel roots or implemented runtimes |
 | “how is it orchestrated?” / lifecycle | `RESEARCH-LIFECYCLE-MODEL-v0.1.md` | F05 five levels, bounded Job, orthogonality to Outcome/Evidence/Result | Job success as proof or an implemented general scheduler |
 | “where does Lean fit?” / methods | `FORMAL-METHODS-MAP.md` | Lean’s dependent-type-theory deductive-verification position | Lean as all formal methods |
-| “where are problems?” / external catalog | `VIBEMATHING_PUBLIC_INDEX.md` and its registry | pointer-only, revalidation, `research_eligible=false` boundary | remote count as local ledger or Issue/PR state as evidence |
+| “where are problems?” / external catalog | `VIBEMATHING_PUBLIC_INDEX.md` and its registry | pointer-only, revalidation, `research_eligible=false` boundary; Project #2 ranks are dated operational metadata | remote count/rank as local ledger, recommendation, payable balance, or Issue/PR state as evidence |
 | “is this current?” / freshness | public claims, `GEO.md`, and the dated registry snapshot | verified date and authority source | verified date as a guarantee of future freshness |
 | “does this prove it?” / evidence | GATE-0002 and the relevant fixture/schema | bounded scope, independence, statement faithfulness | finite computation, metadata, or GEO score as proof |
 
@@ -101,9 +101,11 @@ python3 scripts/query_ai_citation.py --intent lifecycle-model --language both --
 The public index points to:
 
 - [`vibemathing/vibe-mathing-problem-library-public`](https://github.com/vibemathing/vibe-mathing-problem-library-public), the external ProblemContract catalog;
+- [`Project #2 View 3`](https://github.com/users/vibemathing/projects/2/views/3), a dated bounty/repository operational view;
+- [`BOUNTY_PROJECT_2_TOP146.md`](problem-library/BOUNTY_PROJECT_2_TOP146.md) and its [`machine-readable snapshot`](problem-library/registry/bounty-project-2-top146.v1.json), which preserve original currency and deduplicate by Repository URL;
 - [`vibemathing/vibe-mathing-problem-public-template`](https://github.com/vibemathing/vibe-mathing-problem-public-template), the fixed Web research template.
 
-These are discovery pointers. Before any separate research activity, re-read the remote catalog contract, `problem_id`, `lifecycle`, digest, repository identity, license, and `WEB_BOOTSTRAP.md`. This repository does not auto-clone, execute, import, or admit remote entries.
+These are discovery and navigation pointers. Before any separate research activity, re-read the remote catalog contract, `problem_id`, `lifecycle`, digest, repository identity, license, and `WEB_BOOTSTRAP.md`; also re-read the Project view, award source, FX date, and repository status when using the bounty snapshot. This repository does not auto-clone, execute, import, sum, or admit remote entries.
 
 ## Freshness and authority
 

@@ -10,6 +10,9 @@ from typing import Any
 
 PUBLIC_URL = "https://github.com/vibemathing/vibe-mathing-cn-public"
 PUBLIC_PROJECT_URL = "https://github.com/users/vibemathing/projects/1"
+PUBLIC_BOUNTY_VIEW_URL = "https://github.com/users/vibemathing/projects/2/views/3"
+BOUNTY_TOP146_PATH = "problem-library/BOUNTY_PROJECT_2_TOP146.md"
+BOUNTY_TOP146_JSON_PATH = "problem-library/registry/bounty-project-2-top146.v1.json"
 KEY_PROBLEM_REPOSITORIES = {
     "vibemathing/problem-millennium-riemann-hypothesis": "open-millennium-problem",
     "vibemathing/problem-millennium-p-vs-np": "open-millennium-problem",
@@ -56,6 +59,8 @@ REQUIRED_FILES = (
     "governance/standards/FORMAL-METHODS-MAP.md",
     "governance/standards/RESEARCH-LIFECYCLE-MODEL-v0.1.md",
     "problem-library/VIBEMATHING_PUBLIC_INDEX.md",
+    "problem-library/BOUNTY_PROJECT_2_TOP146.md",
+    "problem-library/registry/bounty-project-2-top146.v1.json",
     "problem-library/registry/vibemathing-public-source.v1.json",
     "problem-library/templates/README.md",
     "problem-library/templates/AGENTS.md",
@@ -86,6 +91,7 @@ SURFACE_FILES = (
     "assets/ai-citation/geo-readiness-checklist.md",
     "assets/ai-citation/llms-full.txt",
     "problem-library/VIBEMATHING_PUBLIC_INDEX.md",
+    "problem-library/BOUNTY_PROJECT_2_TOP146.md",
 )
 REQUIRED_README_TERMS = (
     "ProblemContract",
@@ -251,7 +257,7 @@ def check_surfaces(root: Path) -> None:
     llms = read_text(root, "llms.txt")
     for term in (
         PUBLIC_URL,
-        "Current public status (verified 2026-09-07):",
+        "Current public status (verified 2026-09-09):",
         "Audience:",
         "Canonical vocabulary:",
         "solution index",
@@ -362,6 +368,60 @@ def check_external_problem_index(root: Path) -> None:
         or project_index.get("visibility") != "public"
     ):
         raise CheckError("vibemathing Project index identity is invalid")
+    bounty_index = registry.get("bounty_project_index")
+    bounty_view = bounty_index.get("view") if isinstance(bounty_index, dict) else None
+    bounty_snapshot_meta = bounty_index.get("top146_snapshot") if isinstance(bounty_index, dict) else None
+    if (
+        not isinstance(bounty_index, dict)
+        or bounty_index.get("owner") != "vibemathing"
+        or bounty_index.get("number") != 2
+        or bounty_index.get("url") != "https://github.com/users/vibemathing/projects/2"
+        or not isinstance(bounty_view, dict)
+        or bounty_view.get("number") != 3
+        or bounty_view.get("url") != PUBLIC_BOUNTY_VIEW_URL
+        or bounty_view.get("sort_by") != [
+            {"field": "USD Equivalent", "direction": "DESC"},
+            {"field": "Title", "direction": "ASC"},
+        ]
+        or not isinstance(bounty_snapshot_meta, dict)
+        or bounty_snapshot_meta.get("path") != BOUNTY_TOP146_JSON_PATH
+        or bounty_snapshot_meta.get("human_index_path") != BOUNTY_TOP146_PATH
+        or bounty_snapshot_meta.get("unique_repositories") != 146
+        or bounty_snapshot_meta.get("deduplication_key") != "repository_url"
+    ):
+        raise CheckError("vibemathing bounty Project index identity is invalid")
+    try:
+        bounty_snapshot = json.loads(read_text(root, BOUNTY_TOP146_JSON_PATH))
+    except json.JSONDecodeError as exc:
+        raise CheckError(f"bounty snapshot is invalid JSON: {exc}") from exc
+    bounty_source = bounty_snapshot.get("source") if isinstance(bounty_snapshot, dict) else None
+    bounty_selection = bounty_snapshot.get("selection") if isinstance(bounty_snapshot, dict) else None
+    bounty_repositories = bounty_snapshot.get("repositories") if isinstance(bounty_snapshot, dict) else None
+    if (
+        not isinstance(bounty_snapshot, dict)
+        or bounty_snapshot.get("schema_version") != "vibemathing-bounty-project-snapshot.v1"
+        or not isinstance(bounty_source, dict)
+        or bounty_source.get("view_url") != PUBLIC_BOUNTY_VIEW_URL
+        or not isinstance(bounty_selection, dict)
+        or bounty_selection.get("selected_unique_repositories") != 146
+        or bounty_selection.get("deduplication_key") != "repository_url"
+        or not isinstance(bounty_repositories, list)
+        or len(bounty_repositories) != 146
+        or [item.get("rank") for item in bounty_repositories] != list(range(1, 147))
+        or len({item.get("repository_url") for item in bounty_repositories}) != 146
+        or any(not isinstance(item.get("repository_url"), str) for item in bounty_repositories)
+    ):
+        raise CheckError("bounty Top-146 snapshot selection or deduplication is invalid")
+    for key in (
+        "repository_activity_is_evidence",
+        "issue_pr_ci_checkpoint_is_evidence",
+        "source_solved_or_claimed_status_is_result",
+        "auto_admit_result_or_solution",
+        "secp256k1_is_millennium_problem",
+    ):
+        boundary = bounty_snapshot.get("mathematical_boundary")
+        if not isinstance(boundary, dict) or boundary.get(key) is not False:
+            raise CheckError(f"bounty snapshot boundary is unsafe: {key}")
     key_repositories = registry.get("key_problem_repositories")
     if not isinstance(key_repositories, list) or len(key_repositories) != len(KEY_PROBLEM_REPOSITORIES):
         raise CheckError("vibemathing key problem repository index has the wrong size")

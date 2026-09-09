@@ -16,7 +16,7 @@
 
 本仓库自有代码与文档按 [MIT License](LICENSE) 发布；`vendor/` 中的第三方材料以各自许可证和来源锁为准。
 
-> **当前公共状态（核验于 2026-09-07）：** canonical Problem、Attempt、Result 记录和 `result-library/indexes/solutions.json` 当前均为空；本仓库不声称解决 Riemann 假设、P vs NP 或任何其他开放数学问题。公开内容是可移植的 Schema、验证规则、owner skills、合成 Fixture、CLI 和 CI。
+> **当前公共状态（核验于 2026-09-09）：** canonical Problem、Attempt、Result 记录和 `result-library/indexes/solutions.json` 当前均为空；本仓库不声称解决 Riemann 假设、P vs NP 或任何其他开放数学问题。公开内容是可移植的 Schema、验证规则、owner skills、合成 Fixture、CLI 和 CI。
 
 公共仓库地址：<https://github.com/vibemathing/vibe-mathing-cn-public>
 
@@ -25,24 +25,30 @@
 | 入口 | 用途 |
 | --- | --- |
 | [问题仓库总览 · GitHub Project #1](https://github.com/users/vibemathing/projects/1) | 浏览公开单问题仓库；Project、字段和卡片是运营索引，不是数学证据 |
+| [赏金问题地图 · GitHub Project #2 View 3](https://github.com/users/vibemathing/projects/2/views/3) | 浏览带日期的赏金排序；金额和 Project 状态是来源元数据，不是数学证据或可领取余额 |
+| [赏金问题仓库 Top 146 快照](problem-library/BOUNTY_PROJECT_2_TOP146.md) | 阅读去重后的公共仓库清单及机器可读快照 |
 | [公共 ProblemContract 问题库](https://github.com/vibemathing/vibe-mathing-problem-library-public) | 查找公开问题合同、catalog 和仓库 locator |
 | [单问题研究模板仓库](https://github.com/vibemathing/vibe-mathing-problem-public-template) | 查看固定 Web research Harness、候选写入边界与启动文件 |
 | [全部 `vibemathing` 公开仓库](https://github.com/vibemathing?tab=repositories) | 查找具体 `problem-*` 仓库及其他公共工程仓库 |
 | [本仓库的详细公共问题索引](problem-library/VIBEMATHING_PUBLIC_INDEX.md) | 阅读 catalog、模板、查询命令和准入边界 |
 
-### 关键问题仓库
+### 关键问题仓库与赏金地图
 
 > 以下均为 ProblemContract/候选研究入口。仓库、Issue、PR、CI 或 checkpoint 的存在不表示问题已解决，也不自动产生 Evidence、Result 或 Solution；secp256k1 条目不属于千禧年问题。
 
-| 问题 | 公开单问题仓库 |
-| --- | --- |
-| 黎曼猜想 | [`problem-millennium-riemann-hypothesis`](https://github.com/vibemathing/problem-millennium-riemann-hypothesis) |
-| P 与 NP 问题 | [`problem-millennium-p-vs-np`](https://github.com/vibemathing/problem-millennium-p-vs-np) |
-| Navier–Stokes 方程存在性与光滑性 | [`problem-millennium-navier-stokes`](https://github.com/vibemathing/problem-millennium-navier-stokes) |
-| Yang–Mills 理论存在性与质量间隙 | [`problem-millennium-yang-mills-mass-gap`](https://github.com/vibemathing/problem-millennium-yang-mills-mass-gap) |
-| 霍奇猜想 | [`problem-millennium-hodge-conjecture`](https://github.com/vibemathing/problem-millennium-hodge-conjecture) |
-| Birch–Swinnerton-Dyer 猜想 | [`problem-millennium-birch-swinnerton-dyer`](https://github.com/vibemathing/problem-millennium-birch-swinnerton-dyer) |
-| secp256k1 离散对数经典多项式时间性审计 | [`problem-secp256k1-ecdlog-polytime`](https://github.com/vibemathing/problem-secp256k1-ecdlog-polytime) |
+带日期的 [`Project #2 View 3 快照`](problem-library/BOUNTY_PROJECT_2_TOP146.md) 收录美元等值赏金视图中前 146 个唯一仓库 URL，并保留原币种、来源状态、Award 状态和来源信息。其 [`机器可读快照`](problem-library/registry/bounty-project-2-top146.v1.json) 只是 pointer-only 运营元数据，不导入 ProblemContract，也不把金额相加。由于目标单位是 146 个仓库，末端保留了 USD 100.00 的边界行；这不是“每一行都严格大于 USD 100”的声明。
+
+六个千禧年条目仍单独归类。密码学 `secp256k1` 条目是独立的复杂性审计问题，不属于千禧年问题。
+
+| 类别 | 问题 | 公开单问题仓库 |
+| --- | --- | --- |
+| 千禧年问题 | 黎曼猜想 | [`problem-millennium-riemann-hypothesis`](https://github.com/vibemathing/problem-millennium-riemann-hypothesis) |
+| 千禧年问题 | P 与 NP 问题 | [`problem-millennium-p-vs-np`](https://github.com/vibemathing/problem-millennium-p-vs-np) |
+| 千禧年问题 | Navier–Stokes 方程存在性与光滑性 | [`problem-millennium-navier-stokes`](https://github.com/vibemathing/problem-millennium-navier-stokes) |
+| 千禧年问题 | Yang–Mills 理论存在性与质量间隙 | [`problem-millennium-yang-mills-mass-gap`](https://github.com/vibemathing/problem-millennium-yang-mills-mass-gap) |
+| 千禧年问题 | 霍奇猜想 | [`problem-millennium-hodge-conjecture`](https://github.com/vibemathing/problem-millennium-hodge-conjecture) |
+| 千禧年问题 | Birch–Swinnerton-Dyer 猜想 | [`problem-millennium-birch-swinnerton-dyer`](https://github.com/vibemathing/problem-millennium-birch-swinnerton-dyer) |
+| 独立密码学问题 | secp256k1 离散对数经典多项式时间性审计 | [`problem-secp256k1-ecdlog-polytime`](https://github.com/vibemathing/problem-secp256k1-ecdlog-polytime) |
 
 ## 30 秒理解
 

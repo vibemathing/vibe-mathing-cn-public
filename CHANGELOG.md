@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-09 — Project #2 Top-146 赏金问题仓库快照
+
+- 从 GitHub Project #2 View 3 fresh-read 234 条 Award record，按 `USD Equivalent DESC`、`Title ASC` 排序，并按 Repository URL 去重，发布前 146 个唯一问题仓库的 JSON 与人类可读索引。
+- 保留原币种、名义金额、USD 折算、FX 日期、来源状态、Award 状态、支付未知状态和 Award ID；同一仓库的多个 Award record 不相加。
+- 明确严格 `USD Equivalent > 100` 的唯一仓库数量与 Top 146 边界不同；为满足 146 个仓库目标，快照透明保留 USD 100.00 边界行。
+- 同步 README、英文 README、公共问题索引、GEO、LLM 检索摘要、实体卡和公共声明；Project、仓库、Issue、PR、CI、checkpoint 与赏金字段仍不是 Evidence、Result 或 Solution。
+- 明确 `secp256k1` 是独立密码学复杂性审计问题，不属于六个千禧年问题。
+
 ## 2026-09-07 — 公共 README、AI 发现与 GEO 维护面
 
 - 在 README 首屏和公共问题索引中增加 GitHub Project #1、公共 ProblemContract 问题库、单问题模板、公开仓库列表以及六个未闭合千禧年问题与 secp256k1 关键问题仓库的直达索引；所有链接保持 pointer-only，不把仓库活动解释为数学证据或已解决声明。

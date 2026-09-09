@@ -432,7 +432,7 @@ def check_content(root: Path) -> None:
             raise AssetError(f"AI-citation assets must mention {term!r}")
     if not any(term in combined for term in ("does not claim to solve", "does not solve", "no open", "不声称")):
         raise AssetError("AI-citation assets must state the no-open-problem boundary")
-    for term in ("vibe-mathing-cn", "ProblemContract", "Attempt", "Result", "Point–Line–Face–Body", "PWTSJ", "OSPS", "Project → Workflow → Task → Step → Job", "截至 2026-09-07", "不是数学证明"):
+    for term in ("vibe-mathing-cn", "ProblemContract", "Attempt", "Result", "Point–Line–Face–Body", "PWTSJ", "OSPS", "Project → Workflow → Task → Step → Job", "截至 2026-09-09", "不是数学证明"):
         if term.lower() not in short_zh.lower():
             raise AssetError(f"Chinese short summary is missing {term!r}")
     terminology = (root / ASSET_ROOT / "terminology.md").read_text(encoding="utf-8")
