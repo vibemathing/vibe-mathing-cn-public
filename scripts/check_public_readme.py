@@ -581,6 +581,23 @@ def check_claims(root: Path) -> None:
         raise CheckError("claim:freshness-authority must preserve the snapshot/revalidation boundary")
 
 
+def check_bounty_readme_tables(root: Path) -> None:
+    expected_ranks = set(range(1, 147))
+    rank_pattern = re.compile(r"^\|\s*(\d{1,3})\s*\|", re.MULTILINE)
+    for relative, header in (
+        ("README.md", "赏金（原币种；USD 等值）"),
+        ("README.en.md", "Bounty (original; USD reference)"),
+    ):
+        text = read_text(root, relative)
+        if header not in text:
+            raise CheckError(f"{relative} is missing the inline bounty column")
+        ranks = {int(value) for value in rank_pattern.findall(text) if 1 <= int(value) <= 146}
+        if ranks != expected_ranks:
+            raise CheckError(f"{relative} must contain inline Project #2 ranks 1..146")
+        if "problem-secp256k1-ecdlog-polytime" not in text:
+            raise CheckError(f"{relative} is missing the separate secp256k1 entry")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project-root", default=".")
@@ -591,6 +608,7 @@ def main() -> int:
         check_architecture_asset(root)
         check_metadata(root)
         check_surfaces(root)
+        check_bounty_readme_tables(root)
         check_links(root)
         check_external_problem_index(root)
         check_claims(root)
