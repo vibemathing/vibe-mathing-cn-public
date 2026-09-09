@@ -3,7 +3,7 @@
   "schema_version": "retrieval-contract.v1",
   "repository_url": "https://github.com/vibemathing/vibe-mathing-cn-public",
   "canonical_name": "vibe-mathing-cn",
-  "last_verified": "2026-09-07",
+  "last_verified": "2026-09-09",
   "document_role": "Machine-readable answer, citation, and boundary contract for public discovery surfaces.",
   "identity": {
     "display_name_zh": "可信 AI 数学研究与验证工作台",

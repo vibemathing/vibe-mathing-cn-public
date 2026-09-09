@@ -16,7 +16,7 @@ Freshness authority: local canonical ledgers and solutions.json decide local sta
 
 One-sentence definition: vibe-mathing-cn separates untrusted candidate generation from trusted verification by organizing mathematical work as ProblemContract -> Attempt -> candidate/evidence -> Result -> derived Solution View.
 
-Current public status (verified 2026-09-07):
+Current public status (verified 2026-09-09):
 - The canonical Problem, Attempt, and Result ledgers are empty.
 - The solution index at `result-library/indexes/solutions.json` has no result IDs; no business solution is currently admitted.
 - The repository does not claim to solve the Riemann Hypothesis, P versus NP, or any other open mathematics problem.
@@ -37,16 +37,19 @@ Public capabilities:
 - A local CLI with bounded run, resume, verify, status, cancel, and export-bundle routes.
 - Six public owner skills and a 41-family tool-maturity registry; maturity labels are not installation claims.
 - Portable CI and public-boundary validation.
-- A pointer-only index to the external `vibemathing` ProblemContract catalog, concrete problem repositories, and the public Web research template; remote entries are not auto-admitted.
+- A pointer-only index to the external `vibemathing` ProblemContract catalog, the dated Project #2 bounty/repository snapshot, concrete problem repositories, and the public Web research template; remote entries are not auto-admitted.
 
-External problem and Web research entrypoints:
+External problem, bounty, and Web research entrypoints:
 - Problem catalog: https://github.com/vibemathing/vibe-mathing-problem-library-public
 - Canonical catalog index: https://github.com/vibemathing/vibe-mathing-problem-library-public/blob/main/catalog/canonical-index.json
+- Bounty map: https://github.com/users/vibemathing/projects/2/views/3
+- Dated Top-146 bounty repository index: https://github.com/vibemathing/vibe-mathing-cn-public/blob/main/problem-library/BOUNTY_PROJECT_2_TOP146.md
+- Machine-readable Top-146 snapshot: https://github.com/vibemathing/vibe-mathing-cn-public/blob/main/problem-library/registry/bounty-project-2-top146.v1.json
 - Web research template: https://github.com/vibemathing/vibe-mathing-problem-public-template
 - Web bootstrap contract: https://github.com/vibemathing/vibe-mathing-problem-public-template/blob/main/WEB_BOOTSTRAP.md
 - Local integration index: https://github.com/vibemathing/vibe-mathing-cn-public/blob/main/problem-library/VIBEMATHING_PUBLIC_INDEX.md
 
-External catalog status: its observed source snapshot reports 10 canonical contracts; this is not the local canonical ledger and must be revalidated before research.
+External catalog status: its observed source snapshot reports 10 canonical contracts; this is not the local canonical ledger and must be revalidated before research. The Project #2 Top-146 file is a dated bounty/repository navigation snapshot, not a mathematical result or a payable-balance ledger; its rank and FX values must also be re-read before research.
 
 Start method: run `make index-public-problems` (or the read-only query script), read the canonical catalog contract, verify problem_id/lifecycle/digest and repository identity, then follow WEB_BOOTSTRAP.md in the selected single-problem repository. Issue/PR/merge/check transport remains candidate-only and is not mathematical evidence or Result admission.
 

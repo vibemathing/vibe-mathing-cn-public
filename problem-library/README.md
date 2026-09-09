@@ -4,6 +4,8 @@
 
 Vibe Mathing 的公开具体问题、问题总库和网页版研究模板见 [`VIBEMATHING_PUBLIC_INDEX.md`](VIBEMATHING_PUBLIC_INDEX.md)。该页只保存外部公开入口和快照说明，不把远端仓库自动导入本地 canonical ledger。
 
+Project #2 View 3 的高赏金问题仓库快照见 [`BOUNTY_PROJECT_2_TOP146.md`](BOUNTY_PROJECT_2_TOP146.md)，机器版本见 [`registry/bounty-project-2-top146.v1.json`](registry/bounty-project-2-top146.v1.json)。它们是带日期的 pointer-only 运营索引，不是 canonical Problem、Evidence、Result 或 Solution。
+
 在顶层生命周期中，问题库提供 Project 所引用的 `ProblemContract` 输入；它不直接创建 Workflow、Task、Step、Job、Attempt 或 Result。五级编排与数学事实链的边界见 [`RESEARCH-LIFECYCLE-MODEL-v0.1.md`](../governance/standards/RESEARCH-LIFECYCLE-MODEL-v0.1.md)。
 
 ## 来源层级
