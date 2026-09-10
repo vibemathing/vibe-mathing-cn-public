@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-09 — Public Web GPT meta-prompt source
+
+- 新增公开、可移植的 `prompts/web/ONE_PASTE_T1_T9_COORDINATOR_PROMPT.md` 0.3.0：输入一个问题仓 URL，首次回复严格输出九个 T1–T9 Candidate 研究提示词代码块。
+- 提示词明确 verifier-side trusted challenge、Candidate/challenge source separation、trusted typed identity、independent semantic faithfulness，以及 native `lean-kernel` 与 sandbox-external replay 的不同 trust domain。
+- 该公共派生不包含私密研究状态、执行记录或内部发布身份，不启动 worker、不准入 verifier、不签 Evidence/Result，也不表示任何 Suite/Harness 已发布或 fleet 已 rollout。
+- public `make check` 已通过，publication manifest 为 `ready_for_pr_review`；尚未 push、merge 或 rollout。
+
 ## 2026-09-09 — Project #2 Top-146 赏金问题仓库快照
 
 - 从 GitHub Project #2 View 3 fresh-read 234 条 Award record，按 `USD Equivalent DESC`、`Title ASC` 排序，并按 Repository URL 去重，发布前 146 个唯一问题仓库的 JSON 与人类可读索引。

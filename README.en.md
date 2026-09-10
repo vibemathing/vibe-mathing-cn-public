@@ -199,6 +199,7 @@ The repository's original code and documentation are released under the [MIT Lic
 - [Method-layer map](#method-layer-map)
 - [Candidate isolation](#candidate-isolation)
 - [Public problem index](#public-problem-index)
+- [Web GPT nine-lane prompt](#web-gpt-nine-lane-prompt)
 - [Public capability boundaries](#public-capability-boundaries)
 - [FAQ](#faq)
 - [Machine-readable entrypoints](#machine-readable-entrypoints)
@@ -246,6 +247,14 @@ python3 scripts/query_vibemathing_public.py --catalog
 ```
 
 Select a canonical catalog contract first, re-check its identity, lifecycle, statement, and digest, then enter the matching single-problem repository and follow `WEB_BOOTSTRAP.md`. Remote catalogs, Issues/PRs, and Web Harness transport do not automatically admit a local Problem, Attempt, Result, or Solution. A copyable local draft is [`problem-library/templates/problem-contract.template.json`](problem-library/templates/problem-contract.template.json); it remains `lifecycle=draft` until separately reviewed.
+
+## Web GPT nine-lane prompt
+
+The public zero-barrier specification is [`prompts/web/ONE_PASTE_T1_T9_COORDINATOR_PROMPT.md`](prompts/web/ONE_PASTE_T1_T9_COORDINATOR_PROMPT.md). Given one problem-repository URL, its coordinator contract returns exactly nine self-contained T1–T9 Candidate-research prompt blocks. It does not launch workers, bypass a controlled repository's pre-admission process, or sign Evidence/Result.
+
+Its high-assurance clauses treat unreviewed AI Lean source as potentially malicious: verifier-side trusted challenge and Candidate source remain separated and digest-bound; statement identity requires a trusted typed probe; semantic faithfulness requires independent review; native `leanchecker --fresh` remains in the `lean-kernel` trust domain; and proof-terminal replay must sandbox Candidate input and use a fixed, different-trust-domain checker/exporter/runner/config. Missing or unqualified routes remain `blocked/undetermined`.
+
+Publication of this prompt does not imply that any private Suite/Harness version was released or rolled out.
 
 ## Architecture at a glance
 

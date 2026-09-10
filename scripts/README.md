@@ -6,6 +6,7 @@
 - `check_public_readme.py`：校验中英文 README、`llms.txt`、公共元数据、声明账本、链接/锚点以及空 canonical ledger 状态。
 - `audit_public_status.py` / `test_audit_public_status.py`：只读、带大小上限地统计三张 canonical ledger 和 `solutions.json`，输出 SHA-256 文件摘要；不写入、不准入 Result，`--expect-empty` 仅用于当前公开空状态门禁。
 - `check_ai_citation_assets.py`：校验 AI 引用资产、双语回答矩阵、实体卡、Schema.org 元数据、GEO 评估协议/报告模板、证据引用和反操纵边界。
+- `test_public_web_meta_prompt.py`：静态检查公开 zero-barrier 元提示词仍为单一可复制源，覆盖九槽顺序、无 MODE 追问、trusted challenge/typed identity、native/external replay 分域和 Candidate-only 边界；不访问 Web、不启动会话。
 - `validate_plfb_metamodel.py` / `test_validate_plfb_metamodel.py`：校验公共 PLFB 概念 registry、F01–F13/B0–B4、唯一归属、PWTSJ/OSPS 定位和虚假 runtime 能力升级攻击；不保存业务实例。
 - `query_ai_citation.py` / `test_query_ai_citation.py`：只读渲染固定 retrieval intent 和稳定 GitHub 引用 URL；拒绝路径逃逸，不访问网络或写入研究记录。
 - `sync_supply_chain.py` / `test_sync_supply_chain.py`：按 lockfile 幂等同步固定 Git reference 和审计快照；拒绝移动分支归档、未固定 clone 与 TLS 验证绕过。外部命令有 timeout。

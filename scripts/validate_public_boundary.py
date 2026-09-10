@@ -178,8 +178,16 @@ def validate(root: Path) -> list[dict[str, str]]:
     git_path = root / ".git"
     if (
         git_path.is_symlink()
-        or not git_path.is_dir()
+        or not (git_path.is_dir() or git_path.is_file())
         or git_path.resolve() != git_path
+    ):
+        return [{"code": "not_git_repository", "path": str(root), "message": "public root is not a Git repository"}]
+    probe = run_git(root, "rev-parse", "--is-inside-work-tree", "--show-toplevel", check=False)
+    probe_lines = probe.stdout.decode().splitlines() if probe.returncode == 0 else []
+    if (
+        len(probe_lines) != 2
+        or probe_lines[0] != "true"
+        or Path(probe_lines[1]).resolve() != root
     ):
         return [{"code": "not_git_repository", "path": str(root), "message": "public root is not a Git repository"}]
 

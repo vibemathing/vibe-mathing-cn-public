@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import importlib.util
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -53,6 +54,26 @@ class PublicBoundaryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             issues = MODULE.validate(Path(temporary))
         self.assertEqual(issues[0]["code"], "not_git_repository")
+
+    def test_linked_worktree_is_a_valid_repository_shape(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(temporary) / "base"
+            linked = Path(temporary) / "linked"
+            base.mkdir()
+            subprocess.run(["git", "init", "-q"], cwd=base, check=True)
+            subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=base, check=True)
+            subprocess.run(["git", "config", "user.name", "Public Boundary Test"], cwd=base, check=True)
+            subprocess.run(
+                ["git", "remote", "add", "origin", "https://github.com/vibemathing/vibe-mathing-cn-public.git"],
+                cwd=base,
+                check=True,
+            )
+            (base / "README.md").write_text("portable public fixture\n", encoding="utf-8")
+            subprocess.run(["git", "add", "README.md"], cwd=base, check=True)
+            subprocess.run(["git", "commit", "-qm", "base"], cwd=base, check=True)
+            subprocess.run(["git", "worktree", "add", "-qb", "linked-test", str(linked)], cwd=base, check=True)
+            self.assertTrue((linked / ".git").is_file())
+            self.assertEqual(MODULE.validate(linked), [])
 
 
 if __name__ == "__main__":
