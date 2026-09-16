@@ -13,20 +13,15 @@ end VibeMathingFixture
 
 /-!
 Temporary diagnostic for `problem:clay-poincare`.
-This isolates the lightweight R^3 model `Fin 3 → ℝ` together with the exact
-manifold assumptions, without the sphere or target conclusion.
+This isolates the standard 3-sphere subtype encoding on `Fin 4 → ℝ`.
 -/
 
 namespace ClayPoincare
 
 abbrev Euclidean3 := Fin 3 → ℝ
 
-theorem euclidean3_nonempty : Nonempty Euclidean3 := by
-  exact ⟨0⟩
-
-theorem assumptions_elaborate
-    (M : Type*) [TopologicalSpace M] [T2Space M]
-    [ChartedSpace Euclidean3 M] [SimplyConnectedSpace M] [CompactSpace M] : True := by
-  trivial
+def Sphere3 :=
+  {x : Fin 4 → ℝ //
+    x 0 * x 0 + x 1 * x 1 + x 2 * x 2 + x 3 * x 3 = 1}
 
 end ClayPoincare
