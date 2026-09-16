@@ -1,3 +1,6 @@
 import VibeMathingFixture
 
 #print axioms VibeMathingFixture.two_add_two
+#print axioms ClayPoincare.pathConnectedSpace_of_simplyConnected
+#print axioms ClayPoincare.nonempty_of_simplyConnected
+#print axioms ClayPoincare.fundamentalGroup_subsingleton_of_simplyConnected
