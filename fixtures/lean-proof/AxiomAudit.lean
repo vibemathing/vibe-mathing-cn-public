@@ -1,3 +1,15 @@
 import VibeMathingFixture
 
 #print axioms VibeMathingFixture.two_add_two
+#print axioms ClayPoincareAlexander.normalizePt
+#print axioms ClayPoincareAlexander.coneMap
+#print axioms ClayPoincareAlexander.continuous_coneMap
+#print axioms ClayPoincareAlexander.coneMap_comp_coneMap
+#print axioms ClayPoincareAlexander.coneHomeomorph
+#print axioms ClayPoincareAlexander.sphereTwo_homeomorph_extends
+#print axioms ClayPoincareAlexander.TwistedSphere
+#print axioms ClayPoincareAlexander.twistedSphereHomeomorphUntwisted
+#print axioms ClayPoincareAlexander.untwistedHomeomorphSphere
+#print axioms ClayPoincareAlexander.twistedSphereHomeomorphSphere
+#print axioms ClayPoincareAlexander.nonempty_twistedSphere_homeomorph_sphere
+#print axioms ClayPoincareAlexander.twistedThreeBallDouble_homeomorph_sphereThree
