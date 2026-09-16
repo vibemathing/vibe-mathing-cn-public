@@ -1,5 +1,6 @@
 import Mathlib.Data.Nat.Basic
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
 import Mathlib.Topology.Homotopy.Product
 
 namespace VibeMathingFixture
@@ -39,6 +40,19 @@ def FundamentalGroup.prodMulEquiv (x : X) (y : Y) :
   map_mul' γ δ :=
     Prod.ext ((FundamentalGroup.map (ContinuousMap.fst : C(X × Y, X)) (x, y)).map_mul γ δ)
       ((FundamentalGroup.map (ContinuousMap.snd : C(X × Y, Y)) (x, y)).map_mul γ δ)
+
+/-- If the first factor has nontrivial fundamental group, the product cannot be
+simply connected. -/
+theorem prod_not_simplyConnectedSpace_of_nontrivial_fundamentalGroup
+    (x : X) (y : Y) [Nontrivial (FundamentalGroup X x)] :
+    ¬ SimplyConnectedSpace (X × Y) := by
+  intro h
+  have hsub : Subsingleton (FundamentalGroup (X × Y) (x, y)) := inferInstance
+  have hprod : Nontrivial (FundamentalGroup X x × FundamentalGroup Y y) := by
+    infer_instance
+  have hsource : Nontrivial (FundamentalGroup (X × Y) (x, y)) :=
+    (FundamentalGroup.prodMulEquiv x y).symm.injective.nontrivial
+  exact (not_subsingleton_iff_nontrivial.mpr hsource) hsub
 
 end
 
