@@ -13,22 +13,18 @@ end VibeMathingFixture
 
 /-!
 Temporary target-type diagnostic for `problem:clay-poincare`.
-This probe isolates the homeomorphism proposition itself, with no manifold
-assumptions, while keeping the already-verified lightweight real-topology import.
+This probe isolates the abstract homeomorphism type and removes the sphere subtype.
 -/
 
 namespace ClayPoincare
 
-def Sphere3 :=
-  {x : Fin 4 → ℝ //
-    x 0 * x 0 + x 1 * x 1 + x 2 * x 2 + x 3 * x 3 = 1}
+def GenericHomeomorphTarget (M N : Type*)
+    [TopologicalSpace M] [TopologicalSpace N] : Prop :=
+  Nonempty (M ≃ₜ N)
 
-def HomeomorphTarget (M : Type*) [TopologicalSpace M] : Prop :=
-  Nonempty (M ≃ₜ Sphere3)
-
-theorem homeomorphTarget_iff_explicit
-    (M : Type*) [TopologicalSpace M] :
-    HomeomorphTarget M ↔ Nonempty (M ≃ₜ Sphere3) :=
+theorem genericHomeomorphTarget_iff_explicit
+    (M N : Type*) [TopologicalSpace M] [TopologicalSpace N] :
+    GenericHomeomorphTarget M N ↔ Nonempty (M ≃ₜ N) :=
   Iff.rfl
 
 end ClayPoincare
