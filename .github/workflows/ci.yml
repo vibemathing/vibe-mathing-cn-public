@@ -107,6 +107,43 @@ jobs:
               raise SystemExit(f'unexpected mapOfEq identity occurrence count: {s.count(old)}')
           p.write_text(s.replace(old, new))
           PY
+          cat > HatcherLib/Ch1/PoincareVanKampenBridge.lean <<'LEAN'
+          import HatcherLib.Ch1.VanKampenGlobalSweep
+
+          namespace HatcherLib
+
+          noncomputable section
+
+          universe u
+          variable {X : Type u} [TopologicalSpace X] {x₀ : X}
+
+          /-- For a two-set cover, pairwise path-connectedness already gives the
+          triple-intersection hypothesis required by the adapted-grid sweep. -/
+          theorem boolCover_tripleIntersectionsPathConnected
+              (cover : PathConnectedOpenCover x₀ Bool) :
+              VanKampenTripleIntersectionsPathConnected cover := by
+            intro i j k
+            cases i <;> cases j <;> cases k
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using
+                cover.pathConnected false
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using
+                cover.interPathConnected false true
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using
+                cover.interPathConnected false true
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using
+                cover.interPathConnected false true
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using
+                cover.interPathConnected true false
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using
+                cover.interPathConnected true false
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using
+                cover.interPathConnected true false
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using
+                cover.pathConnected true
+
+          end
+          end HatcherLib
+          LEAN
           rm -f lake-manifest.json
           lake update mathlib
           test "$(cat lean-toolchain)" = "leanprover/lean4:v4.33.0"
@@ -116,6 +153,6 @@ jobs:
         working-directory: /tmp/poincare-src/formalized-sources/Hatcher
         run: lake exe cache get
 
-      - name: Build Hatcher Van Kampen chain
+      - name: Build Hatcher Van Kampen chain and two-set bridge
         working-directory: /tmp/poincare-src/formalized-sources/Hatcher
-        run: lake build HatcherLib.Ch1.VanKampenGlobalSweep HatcherLib.Ch1.VanKampenAdaptedGrid
+        run: lake build HatcherLib.Ch1.VanKampenGlobalSweep HatcherLib.Ch1.VanKampenAdaptedGrid HatcherLib.Ch1.PoincareVanKampenBridge
