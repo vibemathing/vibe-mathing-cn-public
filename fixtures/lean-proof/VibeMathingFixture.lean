@@ -76,6 +76,23 @@ theorem addCircle_prod_not_simplyConnectedSpace
   letI : Nontrivial (FundamentalGroup Circle1 0) := circleFundamentalGroup_nontrivial
   exact prod_not_simplyConnectedSpace_of_nontrivial_fundamentalGroup (X := Circle1) 0 y
 
+/-- Transport form of the sphere-handle obstruction.  Once a geometric circle
+model `A` is homeomorphic to `AddCircle 1`, any space homeomorphic to `A × Y`
+is not simply connected.  The geometric `SphereOne ≃ₜ AddCircle 1` bridge is
+kept as an explicit input so its heavier Euclidean import can be audited
+separately. -/
+theorem handle_not_simplyConnectedSpace_of_circle_homeomorph
+    {M A Y : Type*} [TopologicalSpace M] [TopologicalSpace A] [TopologicalSpace Y]
+    (eA : A ≃ₜ Circle1) (eM : M ≃ₜ (A × Y)) (y : Y) :
+    ¬ SimplyConnectedSpace M := by
+  intro hM
+  have hAY : SimplyConnectedSpace (A × Y) :=
+    eM.toHomotopyEquiv.simplyConnectedSpace_iff.mp hM
+  let eProd : (A × Y) ≃ₜ (Circle1 × Y) := eA.prodCongr (Homeomorph.refl Y)
+  have hCY : SimplyConnectedSpace (Circle1 × Y) :=
+    eProd.toHomotopyEquiv.simplyConnectedSpace_iff.mp hAY
+  exact addCircle_prod_not_simplyConnectedSpace y hCY
+
 end
 
 end ClayPoincareCircleProduct
