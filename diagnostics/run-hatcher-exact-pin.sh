@@ -142,14 +142,22 @@ theorem boolCover_tripleIntersectionsPathConnected
     VanKampenTripleIntersectionsPathConnected cover := by
   intro i j k
   cases i <;> cases j <;> cases k
-  · convert cover.pathConnected false using 1 <;> ext x <;> simp
-  · convert cover.interPathConnected false true using 1 <;> ext x <;> simp
-  · convert cover.interPathConnected false true using 1 <;> ext x <;> simp
-  · convert cover.interPathConnected false true using 1 <;> ext x <;> simp
-  · convert cover.interPathConnected true false using 1 <;> ext x <;> simp
-  · convert cover.interPathConnected true false using 1 <;> ext x <;> simp
-  · convert cover.interPathConnected true false using 1 <;> ext x <;> simp
-  · convert cover.pathConnected true using 1 <;> ext x <;> simp
+  · convert cover.pathConnected false using 1 <;>
+      ext x <;> simp only [Set.mem_inter_iff] <;> tauto
+  · convert cover.interPathConnected false true using 1 <;>
+      ext x <;> simp only [Set.mem_inter_iff] <;> tauto
+  · convert cover.interPathConnected false true using 1 <;>
+      ext x <;> simp only [Set.mem_inter_iff] <;> tauto
+  · convert cover.interPathConnected false true using 1 <;>
+      ext x <;> simp only [Set.mem_inter_iff] <;> tauto
+  · convert cover.interPathConnected true false using 1 <;>
+      ext x <;> simp only [Set.mem_inter_iff] <;> tauto
+  · convert cover.interPathConnected true false using 1 <;>
+      ext x <;> simp only [Set.mem_inter_iff] <;> tauto
+  · convert cover.interPathConnected true false using 1 <;>
+      ext x <;> simp only [Set.mem_inter_iff] <;> tauto
+  · convert cover.pathConnected true using 1 <;>
+      ext x <;> simp only [Set.mem_inter_iff] <;> tauto
 
 end
 end HatcherLib
