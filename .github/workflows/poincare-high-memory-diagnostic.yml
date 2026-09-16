@@ -37,5 +37,5 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .lake/build/lib/lean
-          lean -j1 -o .lake/build/lib/lean/VibeMathingFixture.olean VibeMathingFixture.lean
-          lean -j1 AxiomAudit.lean
+          lake env lean -j1 -o .lake/build/lib/lean/VibeMathingFixture.olean VibeMathingFixture.lean
+          lake env lean -j1 AxiomAudit.lean
