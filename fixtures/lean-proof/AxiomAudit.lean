@@ -1,3 +1,9 @@
 import VibeMathingFixture
 
 #print axioms VibeMathingFixture.two_add_two
+#print axioms ClayPoincareCircleProduct.circleFundamentalGroupEquivZ
+#print axioms ClayPoincareCircleProduct.circleFundamentalGroup_nontrivial
+#print axioms ClayPoincareCircleProduct.FundamentalGroup.prodMulEquiv
+#print axioms ClayPoincareCircleProduct.prod_not_simplyConnectedSpace_of_nontrivial_fundamentalGroup
+#print axioms ClayPoincareCircleProduct.addCircle_prod_not_simplyConnectedSpace
+#print axioms ClayPoincareCircleProduct.handle_not_simplyConnectedSpace_of_circle_homeomorph
