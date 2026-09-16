@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# First replay the migrated Hatcher Van Kampen development on the exact mission pin.
 bash diagnostics/run-hatcher-exact-pin.sh
-
-# The child replay installs elan but its exported PATH does not escape the child shell.
 export PATH="$HOME/.elan/bin:$PATH"
 cd /tmp/poincare-src/formalized-sources/Hatcher
 cat > HatcherLib/Ch1/PoincareVanKampenCorollary.lean <<'LEAN'
@@ -30,7 +27,18 @@ theorem vanKampenNormalSubgroup_eq_bot_of_intersections_subsingleton
     rcases hr with ⟨i, j, w, rfl⟩
     have hw : w = 1 := @Subsingleton.elim _ (hinter i j) w 1
     subst w
-    simp [vanKampenRelator]
+    have hleft :
+        coverIntersectionToLeft cover i j
+            (1 : CoverIntersectionFundamentalGroup cover i j) = 1 :=
+      (coverIntersectionToLeft cover i j).map_one
+    have hright :
+        coverIntersectionToRight cover i j
+            (1 : CoverIntersectionFundamentalGroup cover i j) = 1 :=
+      (coverIntersectionToRight cover i j).map_one
+    rw [vanKampenRelator, hleft, hright,
+      (freeProductInclusion (fun k => CoverFundamentalGroup cover k) i).map_one,
+      (freeProductInclusion (fun k => CoverFundamentalGroup cover k) j).map_one]
+    simp
   · exact bot_le
 
 /-- Kernel equality plus trivial overlaps and trivial ambient fundamental group
