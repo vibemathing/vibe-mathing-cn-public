@@ -2,6 +2,9 @@ name: Poincare Hatcher Van Kampen target-pin replay
 
 on:
   pull_request:
+  push:
+    branches:
+      - tmp-poincare-hatcher-vankampen-target-pin-v2-20260917
 
 permissions:
   contents: read
