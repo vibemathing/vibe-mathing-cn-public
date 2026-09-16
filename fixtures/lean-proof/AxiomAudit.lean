@@ -1,3 +1,5 @@
 import VibeMathingFixture
 
 #print axioms VibeMathingFixture.two_add_two
+#print axioms ClayPoincareSphereOne.complexToEuclideanLinearIsometryEquiv
+#print axioms ClayPoincareSphereOne.sphereOneCircleHomeomorph
