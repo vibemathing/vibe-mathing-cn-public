@@ -13,18 +13,16 @@ end VibeMathingFixture
 
 /-!
 Temporary target-type diagnostic for `problem:clay-poincare`.
-This probe isolates the abstract homeomorphism type and removes the sphere subtype.
+This probe checks that the algebraic standard 3-sphere subtype exposes its
+induced topology when kept definitionally transparent with `abbrev`.
 -/
 
 namespace ClayPoincare
 
-def GenericHomeomorphTarget (M N : Type*)
-    [TopologicalSpace M] [TopologicalSpace N] : Prop :=
-  Nonempty (M ≃ₜ N)
+abbrev Sphere3 :=
+  {x : Fin 4 → ℝ //
+    x 0 * x 0 + x 1 * x 1 + x 2 * x 2 + x 3 * x 3 = 1}
 
-theorem genericHomeomorphTarget_iff_explicit
-    (M N : Type*) [TopologicalSpace M] [TopologicalSpace N] :
-    GenericHomeomorphTarget M N ↔ Nonempty (M ≃ₜ N) :=
-  Iff.rfl
+def sphere3TopologicalSpace : TopologicalSpace Sphere3 := inferInstance
 
 end ClayPoincare
