@@ -36,7 +36,7 @@ if MATHLIB_OLD not in s:
     raise SystemExit('old Mathlib pin not found')
 p.write_text(s.replace(MATHLIB_OLD, MATHLIB_NEW))
 
-# Lean 4.33 transparency migration in mapOfEq.  Mathematical statements unchanged.
+# Lean 4.33 transparency migration in mapOfEq. Mathematical statements unchanged.
 p = Path('HatcherLib/Ch1/BasicConstructions.lean')
 s = p.read_text()
 old = '(_root_.FundamentalGroup.mapOfEq (ContinuousMap.id Y) h).comp'
@@ -46,7 +46,8 @@ if s.count(old) != 2:
 p.write_text(s.replace(old, new))
 
 # Avoid unfolding the indexed free product implementation at the target pin.
-# Use the already-proved universal-property restriction lemma instead.
+# Give the component maps the codomain that the original vanKampenMap definition
+# already fixes, then use the universal-property restriction lemma.
 p = Path('HatcherLib/Ch1/VanKampen.lean')
 s = p.read_text()
 old = '''  rw [vanKampenMap, freeProductLift, freeProductInclusion,
@@ -54,8 +55,9 @@ old = '''  rw [vanKampenMap, freeProductLift, freeProductInclusion,
   change Path.Homotopic.Quotient.map'''
 new = '''  change
     (freeProductLift (fun i => CoverFundamentalGroup cover i)
-      (fun i => FundamentalGroup.map (coverInclusion cover i)
-        ⟨x₀, cover.base_mem i⟩))
+      (fun i => (FundamentalGroup.map (coverInclusion cover i)
+        ⟨x₀, cover.base_mem i⟩ :
+          CoverFundamentalGroup cover i →* FundamentalGroup X x₀)))
       ((freeProductInclusion (fun i => CoverFundamentalGroup cover i) i)
         (FundamentalGroup.fromPath (Path.Homotopic.Quotient.mk
           (pathInSubtype (cover.base_mem i) p.path hp)))) = _
