@@ -1,5 +1,5 @@
 import Mathlib.Data.Nat.Basic
-import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Geometry.Manifold.ChartedSpace
 
 namespace VibeMathingFixture
 
@@ -12,15 +12,16 @@ end VibeMathingFixture
 
 /-!
 Temporary elaboration-only diagnostic for `problem:clay-poincare`.
-This commit isolates the exact Euclidean-space import used by the target.
+This commit isolates the charted-space import without `PiL2`, using `ℝ` as a
+lightweight model to test the compact-to-second-countable interface.
 It is not a proof of the Poincaré conjecture and must not be merged.
 -/
 
 namespace ClayPoincare
 
-abbrev Euclidean3 := EuclideanSpace ℝ (Fin 3)
-
-theorem euclidean3_nonempty : Nonempty Euclidean3 := by
-  exact ⟨0⟩
+theorem secondCountable_of_compact_charted_real
+    (M : Type*) [TopologicalSpace M] [ChartedSpace ℝ M] [CompactSpace M] :
+    SecondCountableTopology M := by
+  exact ChartedSpace.secondCountable_of_sigmaCompact ℝ M
 
 end ClayPoincare
