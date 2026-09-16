@@ -36,7 +36,6 @@ if MATHLIB_OLD not in s:
     raise SystemExit('old Mathlib pin not found')
 p.write_text(s.replace(MATHLIB_OLD, MATHLIB_NEW))
 
-# Lean 4.33 transparency migration in mapOfEq. Mathematical statements unchanged.
 p = Path('HatcherLib/Ch1/BasicConstructions.lean')
 s = p.read_text()
 old = '(_root_.FundamentalGroup.mapOfEq (ContinuousMap.id Y) h).comp'
@@ -47,10 +46,6 @@ p.write_text(s.replace(old, new))
 
 p = Path('HatcherLib/Ch1/VanKampen.lean')
 s = p.read_text()
-
-# Lean 4.33 fails to infer the common target basepoint when the component maps
-# are passed anonymously to the dependent free-product lift. Give each
-# component its exact codomain first, preserving the original FundamentalGroup.map.
 old_def = '''/-- The homomorphism from the free product of the fundamental groups of the
 cover members to the fundamental group of the ambient space. -/
 def vanKampenMap {x₀ : X} {ι : Type v}
@@ -76,7 +71,6 @@ def vanKampenMap {x₀ : X} {ι : Type v}
 if s.count(old_def) != 1:
     raise SystemExit(f'unexpected vanKampenMap definition count: {s.count(old_def)}')
 s = s.replace(old_def, new_def)
-
 old_factor = '''  rw [vanKampenMap, freeProductLift, freeProductInclusion,
     Monoid.CoprodI.lift_of]
   change Path.Homotopic.Quotient.map'''
@@ -86,7 +80,6 @@ new_factor = '''  rw [vanKampenMap, freeProductLift, freeProductInclusion,
 if s.count(old_factor) != 1:
     raise SystemExit(f'unexpected vanKampenMap_factor proof block count: {s.count(old_factor)}')
 s = s.replace(old_factor, new_factor)
-
 old_relator = '''  simp only [vanKampenRelator, map_mul, map_inv, vanKampenMap,
     freeProductLift, freeProductInclusion, Monoid.CoprodI.lift_of]'''
 new_relator = '''  simp only [vanKampenRelator, map_mul, map_inv, vanKampenMap,
@@ -97,10 +90,6 @@ if s.count(old_relator) != 1:
 s = s.replace(old_relator, new_relator)
 p.write_text(s)
 
-# Two map-forgetfulness lemmas in VanKampenSweep are pointwise definitional
-# equalities.  The source proof rewrites through dependent arguments carrying
-# proof terms; Lean 4.33 is more sensitive to those proof-term shapes.  Prove
-# the same path equalities extensionally and let proof irrelevance erase them.
 p = Path('HatcherLib/Ch1/VanKampenSweep.lean')
 s = p.read_text()
 old_h = '''  unfold horizontalBasedEdgeInCell horizontalEdgeLoop
@@ -109,10 +98,15 @@ old_h = '''  unfold horizontalBasedEdgeInCell horizontalEdgeLoop
     grid.vertexConnectorInCell_map]
   apply Path.ext
   rfl'''
-new_h = '''  ext t
+new_h = '''  unfold horizontalBasedEdgeInCell horizontalEdgeLoop
+  rw [Path.map_trans, Path.map_trans, ← Path.map_symm,
+    grid.vertexConnectorInCell_map htriple i j i.castSucc s (Or.inl rfl) hjs,
+    grid.horizontalEdgeInCell_map i j s hjs,
+    grid.vertexConnectorInCell_map htriple i j i.succ s (Or.inr rfl) hjs]
+  apply Path.ext
   rfl'''
 if s.count(old_h) != 1:
-    raise SystemExit(f'unexpected horizontal sweep proof count: {s.count(old_h)}')
+    raise SystemExit(f'unexpected horizontal source proof count: {s.count(old_h)}')
 s = s.replace(old_h, new_h)
 old_v = '''  unfold verticalBasedEdgeInCell verticalEdgeLoop
   rw [Path.map_trans, Path.map_trans, ← Path.map_symm,
@@ -120,10 +114,15 @@ old_v = '''  unfold verticalBasedEdgeInCell verticalEdgeLoop
     grid.vertexConnectorInCell_map]
   apply Path.ext
   rfl'''
-new_v = '''  ext t
+new_v = '''  unfold verticalBasedEdgeInCell verticalEdgeLoop
+  rw [Path.map_trans, Path.map_trans, ← Path.map_symm,
+    grid.vertexConnectorInCell_map htriple i j r j.castSucc hir (Or.inl rfl),
+    grid.verticalEdgeInCell_map i j r hir,
+    grid.vertexConnectorInCell_map htriple i j r j.succ hir (Or.inr rfl)]
+  apply Path.ext
   rfl'''
 if s.count(old_v) != 1:
-    raise SystemExit(f'unexpected vertical sweep proof count: {s.count(old_v)}')
+    raise SystemExit(f'unexpected vertical source proof count: {s.count(old_v)}')
 s = s.replace(old_v, new_v)
 p.write_text(s)
 PY
