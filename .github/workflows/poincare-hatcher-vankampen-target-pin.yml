@@ -16,6 +16,6 @@ jobs:
       - name: Checkout harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Run exact-pin Hatcher migration probe
+      - name: Run exact-pin Hatcher migration and factor corollary probe
         shell: bash
-        run: bash diagnostics/run-hatcher-exact-pin.sh
+        run: bash diagnostics/run-hatcher-factor-corollary.sh
