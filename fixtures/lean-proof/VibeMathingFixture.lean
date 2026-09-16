@@ -1,5 +1,6 @@
 import Mathlib.Data.Nat.Basic
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Geometry.Manifold.ChartedSpace
 
 namespace VibeMathingFixture
 
@@ -13,26 +14,18 @@ end VibeMathingFixture
 
 /-!
 Temporary elaboration-only diagnostic for `problem:clay-poincare`.
-This commit isolates the simple-connectivity import and its immediate consequences
-under the production loop's fixed Lean/Mathlib and 8 GiB verifier ceiling.
-It is not a proof of the Poincaré conjecture and must not be merged.
+This commit isolates the compact Euclidean-charted manifold layer and checks
+that the usual second-countability convention is derivable under the pinned
+Mathlib revision. It is not a proof of the Poincaré conjecture and must not be merged.
 -/
 
 namespace ClayPoincare
 
-theorem pathConnectedSpace_of_simplyConnected
-    (M : Type*) [TopologicalSpace M] [SimplyConnectedSpace M] :
-    PathConnectedSpace M := by
-  infer_instance
+abbrev Euclidean3 := EuclideanSpace ℝ (Fin 3)
 
-theorem nonempty_of_simplyConnected
-    (M : Type*) [TopologicalSpace M] [SimplyConnectedSpace M] :
-    Nonempty M := by
-  exact (inferInstance : PathConnectedSpace M).nonempty
-
-theorem fundamentalGroup_subsingleton_of_simplyConnected
-    (M : Type*) [TopologicalSpace M] [SimplyConnectedSpace M] (x : M) :
-    Subsingleton (FundamentalGroup M x) := by
-  infer_instance
+theorem secondCountable_of_compact_charted
+    (M : Type*) [TopologicalSpace M] [ChartedSpace Euclidean3 M] [CompactSpace M] :
+    SecondCountableTopology M := by
+  exact ChartedSpace.secondCountable_of_sigmaCompact Euclidean3 M
 
 end ClayPoincare
