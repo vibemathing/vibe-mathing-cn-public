@@ -89,9 +89,50 @@ theorem boolCover_factors_basepoint_subsingleton
   exact ⟨coverFundamentalGroup_subsingleton_of_vanKampen_ker cover hinter hker false,
     coverFundamentalGroup_subsingleton_of_vanKampen_ker cover hinter hker true⟩
 
+/-- Triviality of the fundamental group at the common cover basepoint upgrades
+to simple connectivity of a path-connected cover member. -/
+theorem coverMember_simplyConnectedSpace_of_basepoint_subsingleton
+    {ι : Type v} (cover : PathConnectedOpenCover x₀ ι) (i : ι)
+    [Subsingleton (CoverFundamentalGroup cover i)] :
+    SimplyConnectedSpace (cover.carrier i) := by
+  letI : PathConnectedSpace (cover.carrier i) :=
+    isPathConnected_iff_pathConnectedSpace.mp (cover.pathConnected i)
+  rw [simply_connected_iff_loops_nullhomotopic]
+  refine ⟨inferInstance, ?_⟩
+  intro x γ
+  let base : cover.carrier i := ⟨x₀, cover.base_mem i⟩
+  have hbase : Subsingleton (FundamentalGroup (cover.carrier i) base) := by
+    dsimp [base]
+    infer_instance
+  let e : FundamentalGroup (cover.carrier i) base ≃*
+      FundamentalGroup (cover.carrier i) x :=
+    FundamentalGroup.fundamentalGroupMulEquivOfPathConnected base x
+  letI : Subsingleton (FundamentalGroup (cover.carrier i) x) :=
+    ⟨fun a b => e.symm.injective (hbase.elim (e.symm a) (e.symm b))⟩
+  apply Path.Homotopic.Quotient.exact
+  exact Subsingleton.elim _ _
+
+/-- Full two-set corollary: under the van Kampen kernel equality and simply
+connected overlaps, a simply connected ambient space has simply connected
+cover members.  This is the algebraic-topology conclusion needed by the
+connected-sum factor argument once its geometric cover is supplied. -/
+theorem boolCover_factors_simplyConnectedSpace
+    (cover : PathConnectedOpenCover x₀ Bool) [SimplyConnectedSpace X]
+    (hinter : ∀ i j, Subsingleton (CoverIntersectionFundamentalGroup cover i j))
+    (hker : MonoidHom.ker (vanKampenMap cover) = vanKampenNormalSubgroup cover) :
+    SimplyConnectedSpace (cover.carrier false) ∧
+      SimplyConnectedSpace (cover.carrier true) := by
+  have hbase := boolCover_factors_basepoint_subsingleton cover hinter hker
+  letI : Subsingleton (CoverFundamentalGroup cover false) := hbase.1
+  letI : Subsingleton (CoverFundamentalGroup cover true) := hbase.2
+  exact ⟨coverMember_simplyConnectedSpace_of_basepoint_subsingleton cover false,
+    coverMember_simplyConnectedSpace_of_basepoint_subsingleton cover true⟩
+
 #print axioms vanKampenNormalSubgroup_eq_bot_of_intersections_subsingleton
 #print axioms coverFundamentalGroup_subsingleton_of_vanKampen_ker
 #print axioms boolCover_factors_basepoint_subsingleton
+#print axioms coverMember_simplyConnectedSpace_of_basepoint_subsingleton
+#print axioms boolCover_factors_simplyConnectedSpace
 
 end
 
