@@ -1,4 +1,7 @@
 import Mathlib.Data.Nat.Basic
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+import Mathlib.Geometry.Manifold.Diffeomorph
+import Mathlib.Geometry.Manifold.Instances.Sphere
 
 namespace VibeMathingFixture
 
@@ -9,3 +12,70 @@ theorem two_add_two : (2 : ℕ) + 2 = 4 := by
 #print axioms two_add_two
 
 end VibeMathingFixture
+
+/-!
+Temporary elaboration-only payload for `problem:clay-poincare`.
+
+This section is deliberately carried only on a disposable verification branch.
+It does not prove the Poincare conjecture and must not be merged into the
+framework fixture.  Its purpose is to force the pinned Lean 4.33.0 / Mathlib
+revision to elaborate the source-independent target layer.
+-/
+
+open scoped Manifold ContDiff
+
+namespace ClayPoincare
+
+abbrev Euclidean3 := EuclideanSpace ℝ (Fin 3)
+abbrev Sphere3 := ↥(Metric.sphere (0 : EuclideanSpace ℝ (Fin 4)) 1)
+
+def Target (M : Type*) [TopologicalSpace M] [T2Space M]
+    [ChartedSpace Euclidean3 M] [SimplyConnectedSpace M] [CompactSpace M] : Prop :=
+  Nonempty (M ≃ₜ Sphere3)
+
+theorem secondCountableTopology_of_compact_charted
+    (M : Type*) [TopologicalSpace M] [ChartedSpace Euclidean3 M]
+    [CompactSpace M] : SecondCountableTopology M := by
+  letI : SigmaCompactSpace M := inferInstance
+  exact ChartedSpace.secondCountable_of_sigmaCompact Euclidean3 M
+
+theorem pathConnectedSpace_of_simplyConnected
+    (M : Type*) [TopologicalSpace M] [SimplyConnectedSpace M] :
+    PathConnectedSpace M := by
+  infer_instance
+
+theorem nonempty_of_simplyConnected
+    (M : Type*) [TopologicalSpace M] [SimplyConnectedSpace M] :
+    Nonempty M := by
+  exact (inferInstance : PathConnectedSpace M).nonempty
+
+theorem fundamentalGroup_subsingleton_of_simplyConnected
+    (M : Type*) [TopologicalSpace M] [SimplyConnectedSpace M] (x : M) :
+    Subsingleton (FundamentalGroup M x) := by
+  infer_instance
+
+theorem target_of_homeomorph
+    (M N : Type*) [TopologicalSpace M] [T2Space M]
+    [ChartedSpace Euclidean3 M] [SimplyConnectedSpace M] [CompactSpace M]
+    [TopologicalSpace N]
+    (e : M ≃ₜ N) (hN : Nonempty (N ≃ₜ Sphere3)) :
+    Target M := by
+  rcases hN with ⟨h⟩
+  exact ⟨e.trans h⟩
+
+theorem target_of_diffeomorph_sphere3
+    (M : Type*) [TopologicalSpace M] [T2Space M]
+    [ChartedSpace Euclidean3 M] [SimplyConnectedSpace M] [CompactSpace M]
+    (h : Nonempty (M ≃ₘ⟮𝓡 3, 𝓡 3⟯ Sphere3)) :
+    Target M := by
+  rcases h with ⟨e⟩
+  exact ⟨e.toHomeomorph⟩
+
+theorem target_iff_explicit
+    (M : Type*) [TopologicalSpace M] [T2Space M]
+    [ChartedSpace Euclidean3 M] [SimplyConnectedSpace M] [CompactSpace M] :
+    Target M ↔
+      Nonempty (M ≃ₜ ↥(Metric.sphere (0 : EuclideanSpace ℝ (Fin 4)) 1)) :=
+  Iff.rfl
+
+end ClayPoincare
