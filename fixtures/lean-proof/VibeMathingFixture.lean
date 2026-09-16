@@ -25,7 +25,7 @@ to the target Lean 4.33.0 / Mathlib `db584cd6...` APIs.
 namespace ClayPoincareAlexander
 
 open Metric
-open scoped Classical
+open scoped Classical BigOperators
 
 noncomputable section
 
@@ -33,7 +33,6 @@ abbrev E (n : ℕ) := EuclideanSpace ℝ (Fin n)
 abbrev Sph (n : ℕ) := sphere (0 : E n) 1
 abbrev Dsk (n : ℕ) := closedBall (0 : E n) 1
 
-/-- Radial projection of a nonzero Euclidean vector to the unit sphere. -/
 noncomputable def normalizePt {n : ℕ} {x : E n} (hx : x ≠ 0) : Sph n :=
   ⟨‖x‖⁻¹ • x, by
     simp only [mem_sphere_zero_iff_norm, norm_smul, norm_inv, norm_norm]
@@ -42,16 +41,13 @@ noncomputable def normalizePt {n : ℕ} {x : E n} (hx : x ≠ 0) : Sph n :=
 @[simp] lemma coe_normalizePt {n : ℕ} {x : E n} (hx : x ≠ 0) :
     (normalizePt hx : E n) = ‖x‖⁻¹ • x := rfl
 
-/-- The cone/radial extension of a self-map of the unit sphere. -/
 noncomputable def coneMap {n : ℕ} (f : Sph n → Sph n) (x : E n) : E n :=
   if h : x = 0 then 0 else ‖x‖ • (f (normalizePt h) : E n)
 
-@[simp] lemma coneMap_zero {n : ℕ} (f : Sph n → Sph n) : coneMap f 0 = 0 := by
-  simp [coneMap]
+@[simp] lemma coneMap_zero {n : ℕ} (f : Sph n → Sph n) : coneMap f 0 = 0 := by simp [coneMap]
 
 lemma coneMap_of_ne_zero {n : ℕ} (f : Sph n → Sph n) {x : E n} (hx : x ≠ 0) :
-    coneMap f x = ‖x‖ • (f (normalizePt hx) : E n) := by
-  rw [coneMap, dif_neg hx]
+    coneMap f x = ‖x‖ • (f (normalizePt hx) : E n) := by rw [coneMap, dif_neg hx]
 
 @[simp] lemma norm_coneMap {n : ℕ} (f : Sph n → Sph n) (x : E n) :
     ‖coneMap f x‖ = ‖x‖ := by
@@ -74,9 +70,7 @@ lemma coneMap_coe_sphere {n : ℕ} (f : Sph n → Sph n) (x : Sph n) :
     simp [hn]
   rw [coneMap_of_ne_zero f hx, hpt, hn, one_smul]
 
-/-- Radial projection as a map on the open nonzero subspace. -/
-noncomputable def radialProj {n : ℕ} : {x : E n // x ≠ 0} → Sph n :=
-  fun p => normalizePt p.2
+noncomputable def radialProj {n : ℕ} : {x : E n // x ≠ 0} → Sph n := fun p => normalizePt p.2
 
 lemma continuous_radialProj {n : ℕ} : Continuous (radialProj (n := n)) := by
   apply Continuous.subtype_mk
@@ -107,8 +101,7 @@ lemma continuous_coneMap {n : ℕ} {f : Sph n → Sph n} (hf : Continuous f) :
     exact hcont.continuousAt (hopen.mem_nhds hx)
 
 lemma coneMap_comp_coneMap {n : ℕ} (f g : Sph n → Sph n)
-    (hgf : ∀ y, g (f y) = y) (x : E n) :
-    coneMap g (coneMap f x) = x := by
+    (hgf : ∀ y, g (f y) = y) (x : E n) : coneMap g (coneMap f x) = x := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp
   · have hnx : ‖x‖ ≠ 0 := norm_ne_zero_iff.mpr hx
@@ -121,11 +114,8 @@ lemma coneMap_comp_coneMap {n : ℕ} (f g : Sph n → Sph n)
       apply Subtype.ext
       rw [coe_normalizePt, norm_coneMap, coneMap_of_ne_zero f hx, smul_smul,
         inv_mul_cancel₀ hnx, one_smul]
-    rw [hpt, hgf, norm_coneMap, coe_normalizePt, smul_smul,
-      mul_inv_cancel₀ hnx, one_smul]
+    rw [hpt, hgf, norm_coneMap, coe_normalizePt, smul_smul, mul_inv_cancel₀ hnx, one_smul]
 
-/-- Alexander trick: every unit-sphere homeomorphism extends to a
-norm-preserving homeomorphism of the ambient Euclidean space. -/
 noncomputable def coneHomeomorph {n : ℕ} (f : Sph n ≃ₜ Sph n) : E n ≃ₜ E n where
   toFun := coneMap f
   invFun := coneMap f.symm
@@ -140,28 +130,20 @@ noncomputable def coneHomeomorph {n : ℕ} (f : Sph n ≃ₜ Sph n) : E n ≃ₜ
 lemma coneHomeomorph_coe_sphere {n : ℕ} (f : Sph n ≃ₜ Sph n) (x : Sph n) :
     coneHomeomorph f (x : E n) = f x := coneMap_coe_sphere _ x
 
-/-- The exact `S²` case needed for 3-ball gluings. -/
-theorem sphereTwo_homeomorph_extends
-    (f : Sph 3 ≃ₜ Sph 3) :
+theorem sphereTwo_homeomorph_extends (f : Sph 3 ≃ₜ Sph 3) :
     ∃ F : E 3 ≃ₜ E 3,
-      (∀ x : Sph 3, F (x : E 3) = (f x : E 3)) ∧
-      ∀ x : E 3, ‖F x‖ = ‖x‖ :=
+      (∀ x : Sph 3, F (x : E 3) = (f x : E 3)) ∧ ∀ x : E 3, ‖F x‖ = ‖x‖ :=
   ⟨coneHomeomorph f, coneHomeomorph_coe_sphere f, norm_coneHomeomorph f⟩
 
 lemma norm_coe_dsk_le {n : ℕ} (x : Dsk n) : ‖(x : E n)‖ ≤ 1 :=
   mem_closedBall_zero_iff.mp x.2
 
-/-- The boundary sphere sits inside the closed disk. -/
 def sphereToDisk {n : ℕ} (x : Sph n) : Dsk n :=
-  ⟨(x : E n), by
-    rw [mem_closedBall_zero_iff]
-    exact le_of_eq (mem_sphere_zero_iff_norm.mp x.property)⟩
+  ⟨(x : E n), by rw [mem_closedBall_zero_iff]; exact le_of_eq (mem_sphere_zero_iff_norm.mp x.property)⟩
 
-/-- The generating boundary identification for a twisted double of a disk. -/
 inductive GlueRel {n : ℕ} (f : Sph n ≃ₜ Sph n) : Dsk n ⊕ Dsk n → Dsk n ⊕ Dsk n → Prop
   | intro (x : Sph n) : GlueRel f (Sum.inl (sphereToDisk x)) (Sum.inr (sphereToDisk (f x)))
 
-/-- Two closed `n`-disks glued along their unit-sphere boundaries by `f`. -/
 def TwistedSphere {n : ℕ} (f : Sph n ≃ₜ Sph n) : Type := Quot (GlueRel f)
 
 instance {n : ℕ} (f : Sph n ≃ₜ Sph n) : TopologicalSpace (TwistedSphere f) :=
@@ -170,22 +152,16 @@ instance {n : ℕ} (f : Sph n ≃ₜ Sph n) : TopologicalSpace (TwistedSphere f)
 instance {n : ℕ} (f : Sph n ≃ₜ Sph n) : CompactSpace (TwistedSphere f) :=
   inferInstanceAs (CompactSpace (Quot _))
 
-def TwistedSphere.mk {n : ℕ} (f : Sph n ≃ₜ Sph n) (p : Dsk n ⊕ Dsk n) : TwistedSphere f :=
-  Quot.mk _ p
+def TwistedSphere.mk {n : ℕ} (f : Sph n ≃ₜ Sph n) (p : Dsk n ⊕ Dsk n) : TwistedSphere f := Quot.mk _ p
 
-lemma TwistedSphere.continuous_mk {n : ℕ} (f : Sph n ≃ₜ Sph n) :
-    Continuous (TwistedSphere.mk f) := continuous_quot_mk
+lemma TwistedSphere.continuous_mk {n : ℕ} (f : Sph n ≃ₜ Sph n) : Continuous (TwistedSphere.mk f) := continuous_quot_mk
 
 lemma TwistedSphere.sound {n : ℕ} (f : Sph n ≃ₜ Sph n) (x : Sph n) :
     TwistedSphere.mk f (Sum.inl (sphereToDisk x)) =
-      TwistedSphere.mk f (Sum.inr (sphereToDisk (f x))) :=
-  Quot.sound (GlueRel.intro x)
+      TwistedSphere.mk f (Sum.inr (sphereToDisk (f x))) := Quot.sound (GlueRel.intro x)
 
-/-- Alexander extension restricted to the closed disk. -/
 noncomputable def diskMap {n : ℕ} (f : Sph n ≃ₜ Sph n) (y : Dsk n) : Dsk n :=
-  ⟨coneHomeomorph f (y : E n), by
-    rw [mem_closedBall_zero_iff, norm_coneHomeomorph]
-    exact norm_coe_dsk_le y⟩
+  ⟨coneHomeomorph f (y : E n), by rw [mem_closedBall_zero_iff, norm_coneHomeomorph]; exact norm_coe_dsk_le y⟩
 
 lemma continuous_diskMap {n : ℕ} (f : Sph n ≃ₜ Sph n) : Continuous (diskMap f) :=
   Continuous.subtype_mk ((coneHomeomorph f).continuous.comp continuous_subtype_val) _
@@ -207,14 +183,12 @@ lemma diskMap_sphereToDisk {n : ℕ} (f : Sph n ≃ₜ Sph n) (x : Sph n) :
 
 abbrev sphereId (n : ℕ) : Sph n ≃ₜ Sph n := Homeomorph.refl _
 
-noncomputable def untwistInv {n : ℕ} (f : Sph n ≃ₜ Sph n) :
-    TwistedSphere (sphereId n) → TwistedSphere f := by
+noncomputable def untwistInv {n : ℕ} (f : Sph n ≃ₜ Sph n) : TwistedSphere (sphereId n) → TwistedSphere f := by
   refine Quot.lift (fun p => TwistedSphere.mk f (Sum.map id (diskMap f) p)) ?_
   rintro _ _ ⟨x⟩
   simpa [Sum.map, diskMap_sphereToDisk f x] using TwistedSphere.sound f x
 
-noncomputable def untwist {n : ℕ} (f : Sph n ≃ₜ Sph n) :
-    TwistedSphere f → TwistedSphere (sphereId n) := by
+noncomputable def untwist {n : ℕ} (f : Sph n ≃ₜ Sph n) : TwistedSphere f → TwistedSphere (sphereId n) := by
   refine Quot.lift (fun p => TwistedSphere.mk (sphereId n) (Sum.map id (diskMap f.symm) p)) ?_
   rintro _ _ ⟨x⟩
   have h : diskMap f.symm (sphereToDisk (f x)) = sphereToDisk x := by
@@ -222,7 +196,6 @@ noncomputable def untwist {n : ℕ} (f : Sph n ≃ₜ Sph n) :
     simp
   simpa [Sum.map, h] using TwistedSphere.sound (sphereId n) x
 
-/-- Alexander untwisting of an arbitrary boundary gluing. -/
 noncomputable def twistedSphereHomeomorphUntwisted {n : ℕ} (f : Sph n ≃ₜ Sph n) :
     TwistedSphere f ≃ₜ TwistedSphere (sphereId n) where
   toFun := untwist f
@@ -230,52 +203,41 @@ noncomputable def twistedSphereHomeomorphUntwisted {n : ℕ} (f : Sph n ≃ₜ S
   left_inv := by
     intro z
     induction z using Quot.ind with
-    | mk p =>
-      cases p with
+    | mk p => cases p with
       | inl x => rfl
-      | inr y =>
-        show TwistedSphere.mk f (Sum.inr (diskMap f (diskMap f.symm y))) = _
-        rw [diskMap_diskMap_symm]
-        rfl
+      | inr y => show TwistedSphere.mk f (Sum.inr (diskMap f (diskMap f.symm y))) = _; rw [diskMap_diskMap_symm]; rfl
   right_inv := by
     intro z
     induction z using Quot.ind with
-    | mk p =>
-      cases p with
+    | mk p => cases p with
       | inl x => rfl
-      | inr y =>
-        show TwistedSphere.mk (sphereId n) (Sum.inr (diskMap f.symm (diskMap f y))) = _
-        rw [diskMap_symm_diskMap]
-        rfl
+      | inr y => show TwistedSphere.mk (sphereId n) (Sum.inr (diskMap f.symm (diskMap f y))) = _; rw [diskMap_symm_diskMap]; rfl
   continuous_toFun := by
     apply continuous_quot_lift
-    exact (TwistedSphere.continuous_mk _).comp
-      (continuous_id.sumMap (continuous_diskMap f.symm))
+    exact (TwistedSphere.continuous_mk _).comp (continuous_id.sumMap (continuous_diskMap f.symm))
   continuous_invFun := by
     apply continuous_quot_lift
-    exact (TwistedSphere.continuous_mk _).comp
-      (continuous_id.sumMap (continuous_diskMap f))
+    exact (TwistedSphere.continuous_mk _).comp (continuous_id.sumMap (continuous_diskMap f))
 
-/-- Append a last coordinate to a Euclidean vector. -/
 noncomputable def snocLp {n : ℕ} (x : E n) (t : ℝ) : E (n + 1) :=
   WithLp.toLp 2 (Fin.snoc (WithLp.ofLp x) t)
 
-lemma norm_snocLp_sq {n : ℕ} (x : E n) (t : ℝ) :
-    ‖snocLp x t‖ ^ 2 = ‖x‖ ^ 2 + t ^ 2 := by
+lemma norm_snocLp_sq {n : ℕ} (x : E n) (t : ℝ) : ‖snocLp x t‖ ^ 2 = ‖x‖ ^ 2 + t ^ 2 := by
   simp only [snocLp, EuclideanSpace.norm_eq, Fin.sum_univ_castSucc,
     Fin.snoc_castSucc, Fin.snoc_last, Real.norm_eq_abs, sq_abs]
-  rw [Real.sq_sqrt (by positivity), Real.sq_sqrt (by positivity)]
+  have hsum : 0 ≤ ∑ i : Fin n, (WithLp.ofLp x i) ^ 2 :=
+    Finset.sum_nonneg (fun i _ => sq_nonneg (WithLp.ofLp x i))
+  have hsumt : 0 ≤ (∑ i : Fin n, (WithLp.ofLp x i) ^ 2) + t ^ 2 :=
+    add_nonneg hsum (sq_nonneg t)
+  rw [Real.sq_sqrt hsumt, Real.sq_sqrt hsum]
 
 lemma snocLp_apply_castSucc {n : ℕ} (x : E n) (t : ℝ) (i : Fin n) :
-    (WithLp.ofLp (snocLp x t)) i.castSucc = (WithLp.ofLp x) i := by
-  simp [snocLp]
+    (WithLp.ofLp (snocLp x t)) i.castSucc = (WithLp.ofLp x) i := by simp [snocLp]
 
 lemma snocLp_apply_last {n : ℕ} (x : E n) (t : ℝ) :
-    (WithLp.ofLp (snocLp x t)) (Fin.last n) = t := by
-  simp [snocLp]
+    (WithLp.ofLp (snocLp x t)) (Fin.last n) = t := by simp [snocLp]
 
-lemma snocLp_injective {n : ℕ} {x y : E n} {t s : ℝ}
-    (h : snocLp x t = snocLp y s) : x = y ∧ t = s := by
+lemma snocLp_injective {n : ℕ} {x y : E n} {t s : ℝ} (h : snocLp x t = snocLp y s) : x = y ∧ t = s := by
   constructor
   · ext i
     have h' := congrArg (fun v => (WithLp.ofLp v) i.castSucc) h
@@ -288,18 +250,14 @@ lemma exists_snocLp {n : ℕ} (v : E (n + 1)) : ∃ (x : E n) (t : ℝ), v = sno
   apply WithLp.ofLp_injective
   simp [snocLp, Fin.snoc_init_self]
 
-/-- Upper/lower hemisphere maps from the closed disk. -/
 noncomputable def hemisphere {n : ℕ} (e : ℝ) (he : e ^ 2 = 1) (x : Dsk n) : Sph (n + 1) :=
   ⟨snocLp (x : E n) (e * Real.sqrt (1 - ‖(x : E n)‖ ^ 2)), by
-    have hx : ‖(x : E n)‖ ^ 2 ≤ 1 := by
-      have h1 := norm_coe_dsk_le x
-      nlinarith [norm_nonneg (x : E n)]
+    have hx : ‖(x : E n)‖ ^ 2 ≤ 1 := by have h1 := norm_coe_dsk_le x; nlinarith [norm_nonneg (x : E n)]
     rw [mem_sphere_zero_iff_norm]
     have hsq : ‖snocLp (x : E n) (e * Real.sqrt (1 - ‖(x : E n)‖ ^ 2))‖ ^ 2 = 1 := by
       rw [norm_snocLp_sq, mul_pow, he, one_mul, Real.sq_sqrt (by linarith)]
       ring
-    nlinarith [norm_nonneg (snocLp (x : E n)
-      (e * Real.sqrt (1 - ‖(x : E n)‖ ^ 2)))]⟩
+    nlinarith [norm_nonneg (snocLp (x : E n) (e * Real.sqrt (1 - ‖(x : E n)‖ ^ 2)))]⟩
 
 lemma continuous_snocLp {X : Type*} [TopologicalSpace X] {n : ℕ}
     {g : X → E n} {t : X → ℝ} (hg : Continuous g) (ht : Continuous t) :
@@ -310,10 +268,10 @@ lemma continuous_snocLp {X : Type*} [TopologicalSpace X] {n : ℕ}
   refine Fin.lastCases ?_ ?_ i
   · simpa using ht
   · intro j
-    simpa using (continuous_apply j).comp ((PiLp.continuous_ofLp 2 _).comp hg)
+    change Continuous (fun a => (WithLp.ofLp (g a)) j)
+    exact (continuous_apply j).comp ((PiLp.continuous_ofLp 2 _).comp hg)
 
-lemma continuous_hemisphere {n : ℕ} (e : ℝ) (he : e ^ 2 = 1) :
-    Continuous (hemisphere (n := n) e he) := by
+lemma continuous_hemisphere {n : ℕ} (e : ℝ) (he : e ^ 2 = 1) : Continuous (hemisphere (n := n) e he) := by
   apply Continuous.subtype_mk
   exact continuous_snocLp continuous_subtype_val
     (continuous_const.mul (Real.continuous_sqrt.comp
@@ -326,8 +284,7 @@ lemma continuous_doubleToSphere {n : ℕ} : Continuous (doubleToSphere (n := n))
   Continuous.sumElim (continuous_hemisphere _ _) (continuous_hemisphere _ _)
 
 lemma hemisphere_of_norm_one {n : ℕ} (e : ℝ) (he : e ^ 2 = 1) (x : Dsk n)
-    (hx : ‖(x : E n)‖ = 1) :
-    (hemisphere e he x : E (n + 1)) = snocLp (x : E n) 0 := by
+    (hx : ‖(x : E n)‖ = 1) : (hemisphere e he x : E (n + 1)) = snocLp (x : E n) 0 := by
   show snocLp _ _ = _
   rw [hx]
   norm_num
@@ -339,22 +296,17 @@ lemma doubleToSphere_glue {n : ℕ} (a b : Dsk n ⊕ Dsk n)
     apply Subtype.ext
     show (hemisphere 1 (by norm_num) (sphereToDisk x) : E (n + 1)) =
       (hemisphere (-1) (by norm_num) (sphereToDisk (x : Sph n)) : E (n + 1))
-    have hx : ‖((sphereToDisk x : Dsk n) : E n)‖ = 1 :=
-      mem_sphere_zero_iff_norm.mp x.property
+    have hx : ‖((sphereToDisk x : Dsk n) : E n)‖ = 1 := mem_sphere_zero_iff_norm.mp x.property
     rw [hemisphere_of_norm_one _ _ _ hx, hemisphere_of_norm_one _ _ _ hx]
 
-noncomputable def untwistedToSphere {n : ℕ} :
-    TwistedSphere (sphereId n) → Sph (n + 1) :=
+noncomputable def untwistedToSphere {n : ℕ} : TwistedSphere (sphereId n) → Sph (n + 1) :=
   Quot.lift doubleToSphere doubleToSphere_glue
 
-lemma untwistedToSphere_surjective {n : ℕ} :
-    Function.Surjective (untwistedToSphere (n := n)) := by
+lemma untwistedToSphere_surjective {n : ℕ} : Function.Surjective (untwistedToSphere (n := n)) := by
   intro v
   obtain ⟨x, t, hxt⟩ := exists_snocLp (v : E (n + 1))
   have hv : ‖(v : E (n + 1))‖ = 1 := mem_sphere_zero_iff_norm.mp v.property
-  have hsum : ‖x‖ ^ 2 + t ^ 2 = 1 := by
-    rw [← norm_snocLp_sq, ← hxt, hv]
-    norm_num
+  have hsum : ‖x‖ ^ 2 + t ^ 2 = 1 := by rw [← norm_snocLp_sq, ← hxt, hv]; norm_num
   have hxle : ‖x‖ ≤ 1 := by nlinarith [norm_nonneg x, sq_nonneg t]
   have hsq : Real.sqrt (1 - ‖x‖ ^ 2) = |t| := by
     have h : (1 : ℝ) - ‖x‖ ^ 2 = t ^ 2 := by linarith
@@ -379,14 +331,12 @@ lemma norm_eq_one_of_sqrt_eq_neg {n : ℕ} {x : Dsk n}
   have h1 := norm_coe_dsk_le x
   nlinarith [norm_nonneg (x : E n)]
 
-lemma doubleToSphere_inj_aux {n : ℕ} (a b : Dsk n ⊕ Dsk n)
-    (h : doubleToSphere a = doubleToSphere b) :
+lemma doubleToSphere_inj_aux {n : ℕ} (a b : Dsk n ⊕ Dsk n) (h : doubleToSphere a = doubleToSphere b) :
     Quot.mk (GlueRel (sphereId n)) a = Quot.mk (GlueRel (sphereId n)) b := by
   have key : ∀ (u v : Dsk n) (e₁ e₂ : ℝ) (h₁ : e₁ ^ 2 = 1) (h₂ : e₂ ^ 2 = 1),
       (hemisphere e₁ h₁ u : E (n + 1)) = (hemisphere e₂ h₂ v : E (n + 1)) →
       (u : E n) = (v : E n) ∧
-        e₁ * Real.sqrt (1 - ‖(u : E n)‖ ^ 2) =
-          e₂ * Real.sqrt (1 - ‖(v : E n)‖ ^ 2) := by
+        e₁ * Real.sqrt (1 - ‖(u : E n)‖ ^ 2) = e₂ * Real.sqrt (1 - ‖(v : E n)‖ ^ 2) := by
     intro u v e₁ e₂ h₁ h₂ huv
     exact snocLp_injective huv
   cases a with
@@ -400,8 +350,7 @@ lemma doubleToSphere_inj_aux {n : ℕ} (a b : Dsk n ⊕ Dsk n)
       rw [one_mul, neg_one_mul, ← h1] at h2
       have hnorm : ‖(u : E n)‖ = 1 := norm_eq_one_of_sqrt_eq_neg h2
       have hu : u = sphereToDisk ⟨(u : E n), mem_sphere_zero_iff_norm.mpr hnorm⟩ := rfl
-      have hv : v = sphereToDisk ⟨(u : E n), mem_sphere_zero_iff_norm.mpr hnorm⟩ :=
-        Subtype.ext h1.symm
+      have hv : v = sphereToDisk ⟨(u : E n), mem_sphere_zero_iff_norm.mpr hnorm⟩ := Subtype.ext h1.symm
       rw [hu, hv]
       exact TwistedSphere.sound (sphereId n) _
   | inr u =>
@@ -411,8 +360,7 @@ lemma doubleToSphere_inj_aux {n : ℕ} (a b : Dsk n ⊕ Dsk n)
       rw [one_mul, neg_one_mul, ← h1] at h2
       have hnorm : ‖(u : E n)‖ = 1 := norm_eq_one_of_sqrt_eq_neg (by linarith)
       have hu : u = sphereToDisk ⟨(u : E n), mem_sphere_zero_iff_norm.mpr hnorm⟩ := rfl
-      have hv : v = sphereToDisk ⟨(u : E n), mem_sphere_zero_iff_norm.mpr hnorm⟩ :=
-        Subtype.ext h1.symm
+      have hv : v = sphereToDisk ⟨(u : E n), mem_sphere_zero_iff_norm.mpr hnorm⟩ := Subtype.ext h1.symm
       rw [hu, hv]
       exact (TwistedSphere.sound (sphereId n) _).symm
     | inr v =>
@@ -422,31 +370,22 @@ lemma doubleToSphere_inj_aux {n : ℕ} (a b : Dsk n ⊕ Dsk n)
 lemma untwistedToSphere_injective {n : ℕ} : Function.Injective (untwistedToSphere (n := n)) := by
   intro z w h
   induction z using Quot.ind with
-  | mk a =>
-    induction w using Quot.ind with
+  | mk a => induction w using Quot.ind with
     | mk b => exact doubleToSphere_inj_aux a b h
 
-/-- The untwisted double of an `n`-disk is the standard `n`-sphere. -/
-noncomputable def untwistedHomeomorphSphere (n : ℕ) :
-    TwistedSphere (sphereId n) ≃ₜ Sph (n + 1) :=
+noncomputable def untwistedHomeomorphSphere (n : ℕ) : TwistedSphere (sphereId n) ≃ₜ Sph (n + 1) :=
   Continuous.homeoOfEquivCompactToT2
-    (f := Equiv.ofBijective untwistedToSphere
-      ⟨untwistedToSphere_injective, untwistedToSphere_surjective⟩)
+    (f := Equiv.ofBijective untwistedToSphere ⟨untwistedToSphere_injective, untwistedToSphere_surjective⟩)
     (continuous_quot_lift _ continuous_doubleToSphere)
 
-/-- Every twisted double of the closed `n`-disk is homeomorphic to the standard sphere. -/
-noncomputable def twistedSphereHomeomorphSphere {n : ℕ} (f : Sph n ≃ₜ Sph n) :
-    TwistedSphere f ≃ₜ Sph (n + 1) :=
+noncomputable def twistedSphereHomeomorphSphere {n : ℕ} (f : Sph n ≃ₜ Sph n) : TwistedSphere f ≃ₜ Sph (n + 1) :=
   (twistedSphereHomeomorphUntwisted f).trans (untwistedHomeomorphSphere n)
 
 theorem nonempty_twistedSphere_homeomorph_sphere {n : ℕ} (f : Sph n ≃ₜ Sph n) :
-    Nonempty (TwistedSphere f ≃ₜ Sph (n + 1)) :=
-  ⟨twistedSphereHomeomorphSphere f⟩
+    Nonempty (TwistedSphere f ≃ₜ Sph (n + 1)) := ⟨twistedSphereHomeomorphSphere f⟩
 
-/-- The dimension-three instance needed by the Poincare connected-sum endgame. -/
 theorem twistedThreeBallDouble_homeomorph_sphereThree (f : Sph 3 ≃ₜ Sph 3) :
-    Nonempty (TwistedSphere f ≃ₜ Sph 4) :=
-  nonempty_twistedSphere_homeomorph_sphere f
+    Nonempty (TwistedSphere f ≃ₜ Sph 4) := nonempty_twistedSphere_homeomorph_sphere f
 
 end
 
