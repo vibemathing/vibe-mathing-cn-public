@@ -1,10 +1,9 @@
 name: Poincare Hatcher Van Kampen target-pin replay
 
 on:
-  pull_request:
   push:
     branches:
-      - tmp-poincare-hatcher-vankampen-target-pin-v2-20260917
+      - tmp-poincare-hatcher-vankampen-target-pin-v3-20260917
 
 permissions:
   contents: read
@@ -17,60 +16,6 @@ jobs:
       - name: Checkout harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Install fixed Lean toolchain
+      - name: Run exact-pin Hatcher migration probe
         shell: bash
-        run: |
-          set -euo pipefail
-          curl --connect-timeout 15 --max-time 240 --proto '=https' --tlsv1.2 -sSf -o /tmp/elan-init.sh https://raw.githubusercontent.com/leanprover/elan/464c9d28395000a2a0128e07081e4956d50eced2/elan-init.sh
-          echo "a620ff1641616222c8d37c54845492004bb84d6877cdbc944dd65c1aa685bf53  /tmp/elan-init.sh" | sha256sum --check --strict
-          sh /tmp/elan-init.sh -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-          "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.33.0
-
-      - name: Assemble Hatcher source on exact target pin
-        shell: bash
-        run: |
-          set -euo pipefail
-          git clone --filter=blob:none --no-checkout https://github.com/frenzymath/Poincare-Conjecture.git /tmp/poincare-src
-          cd /tmp/poincare-src
-          git fetch --depth=1 origin bb91a091f0b968f8bbe8d861e025a88d82b161be
-          git checkout --detach FETCH_HEAD
-          cd formalized-sources/Hatcher
-          printf '%s\n' 'leanprover/lean4:v4.33.0' > lean-toolchain
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path('lakefile.lean')
-          s = p.read_text()
-          s = s.replace('520045ab14e26149ee970e2e617ca04b09bde5d6', 'db584cd6d46c92f209a44c0f1c829460d327499d')
-          p.write_text(s)
-
-          # Lean 4.33 tightened transparency around ContinuousMap.id in mapOfEq.
-          # Make the identity-map equality proof explicit; this is proof-irrelevant
-          # and changes no mathematical statement.
-          p = Path('HatcherLib/Ch1/BasicConstructions.lean')
-          s = p.read_text()
-          old = '(_root_.FundamentalGroup.mapOfEq (ContinuousMap.id Y) h).comp'
-          new = '''(_root_.FundamentalGroup.mapOfEq (ContinuousMap.id Y)
-        (by simpa using h)).comp'''
-          if s.count(old) != 2:
-              raise SystemExit(f'unexpected mapOfEq identity occurrence count: {s.count(old)}')
-          p.write_text(s.replace(old, new))
-          PY
-          rm -f lake-manifest.json
-          lake update mathlib
-          test "$(cat lean-toolchain)" = "leanprover/lean4:v4.33.0"
-          grep -q 'db584cd6d46c92f209a44c0f1c829460d327499d' lakefile.lean
-
-      - name: Restore target-pin Mathlib cache
-        working-directory: /tmp/poincare-src/formalized-sources/Hatcher
-        shell: bash
-        run: |
-          set -euo pipefail
-          lake exe cache get
-
-      - name: Build Hatcher Van Kampen chain
-        working-directory: /tmp/poincare-src/formalized-sources/Hatcher
-        shell: bash
-        run: |
-          set -euo pipefail
-          lake build HatcherLib.Ch1.VanKampenGlobalSweep HatcherLib.Ch1.VanKampenAdaptedGrid
+        run: bash diagnostics/run-hatcher-exact-pin.sh
