@@ -1,6 +1,7 @@
 import Mathlib.Data.Nat.Basic
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
-import Mathlib.Geometry.Manifold.Instances.Sphere
+import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Geometry.Manifold.ChartedSpace
 
 namespace VibeMathingFixture
 
@@ -14,7 +15,8 @@ end VibeMathingFixture
 
 /-!
 Temporary elaboration-only payload for `problem:clay-poincare`.
-This disposable probe contains only the topological target layer.
+This disposable probe contains only the topological target layer and deliberately
+avoids the smooth sphere-manifold instance module.
 -/
 
 namespace ClayPoincare
