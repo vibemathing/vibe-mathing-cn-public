@@ -40,6 +40,18 @@ jobs:
           s = p.read_text()
           s = s.replace('520045ab14e26149ee970e2e617ca04b09bde5d6', 'db584cd6d46c92f209a44c0f1c829460d327499d')
           p.write_text(s)
+
+          # Lean 4.33 tightened transparency around ContinuousMap.id in mapOfEq.
+          # Make the identity-map equality proof explicit; this is proof-irrelevant
+          # and changes no mathematical statement.
+          p = Path('HatcherLib/Ch1/BasicConstructions.lean')
+          s = p.read_text()
+          old = '(_root_.FundamentalGroup.mapOfEq (ContinuousMap.id Y) h).comp'
+          new = '''(_root_.FundamentalGroup.mapOfEq (ContinuousMap.id Y)
+        (by simpa using h)).comp'''
+          if s.count(old) != 2:
+              raise SystemExit(f'unexpected mapOfEq identity occurrence count: {s.count(old)}')
+          p.write_text(s.replace(old, new))
           PY
           rm -f lake-manifest.json
           lake update mathlib
