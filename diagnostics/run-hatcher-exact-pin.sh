@@ -45,27 +45,33 @@ if s.count(old) != 2:
     raise SystemExit(f'unexpected mapOfEq identity occurrence count: {s.count(old)}')
 p.write_text(s.replace(old, new))
 
-# Avoid unfolding the indexed free product implementation at the target pin.
-# Give the component maps the codomain that the original vanKampenMap definition
-# already fixes, then use the universal-property restriction lemma.
 p = Path('HatcherLib/Ch1/VanKampen.lean')
 s = p.read_text()
-old = '''  rw [vanKampenMap, freeProductLift, freeProductInclusion,
+
+# The original definition relies on reducing the image basepoint
+# `(coverInclusion cover i) ⟨x₀, proof⟩` definitionally to `x₀`.
+# Lean 4.33 is more conservative at the free-product elaboration site, so use
+# Mathlib's explicit basepoint-transporting homomorphism. The statement and map
+# on path classes are unchanged.
+old_def = '''  freeProductLift _ fun i =>
+    FundamentalGroup.map (coverInclusion cover i) ⟨x₀, cover.base_mem i⟩'''
+new_def = '''  freeProductLift _ fun i =>
+    FundamentalGroup.mapOfEq (coverInclusion cover i)
+      (by rfl : (coverInclusion cover i) ⟨x₀, cover.base_mem i⟩ = x₀)'''
+if s.count(old_def) != 1:
+    raise SystemExit(f'unexpected vanKampenMap definition count: {s.count(old_def)}')
+s = s.replace(old_def, new_def)
+
+old_proof = '''  rw [vanKampenMap, freeProductLift, freeProductInclusion,
     Monoid.CoprodI.lift_of]
   change Path.Homotopic.Quotient.map'''
-new = '''  change
-    (freeProductLift (fun i => CoverFundamentalGroup cover i)
-      (fun i => (FundamentalGroup.map (coverInclusion cover i)
-        ⟨x₀, cover.base_mem i⟩ :
-          CoverFundamentalGroup cover i →* FundamentalGroup X x₀)))
-      ((freeProductInclusion (fun i => CoverFundamentalGroup cover i) i)
-        (FundamentalGroup.fromPath (Path.Homotopic.Quotient.mk
-          (pathInSubtype (cover.base_mem i) p.path hp)))) = _
-  rw [← MonoidHom.comp_apply, freeProductLift_comp_inclusion]
+new_proof = '''  rw [vanKampenMap, ← MonoidHom.comp_apply, freeProductLift_comp_inclusion,
+    FundamentalGroup.mapOfEq_apply]
   change Path.Homotopic.Quotient.map'''
-if s.count(old) != 1:
-    raise SystemExit(f'unexpected vanKampenMap_factor rewrite block count: {s.count(old)}')
-p.write_text(s.replace(old, new))
+if s.count(old_proof) != 1:
+    raise SystemExit(f'unexpected vanKampenMap_factor proof block count: {s.count(old_proof)}')
+s = s.replace(old_proof, new_proof)
+p.write_text(s)
 PY
 
 cat > HatcherLib/Ch1/PoincareVanKampenBridge.lean <<'LEAN'
