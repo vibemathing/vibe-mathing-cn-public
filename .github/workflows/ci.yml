@@ -3,68 +3,12 @@ name: CI
 on:
   push:
     branches:
-      - main
       - tmp-poincare-hatcher-vankampen-target-pin-v3-20260917
-  pull_request:
 
 permissions:
   contents: read
 
-concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  validate:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.12"
-          cache: pip
-
-      - name: Install dependencies
-        run: python3 -m pip install --requirement requirements.txt
-
-      - name: Run portable quality gate
-        run: make check
-
-  production-loop:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.12"
-          cache: pip
-
-      - name: Install Python dependencies
-        run: python3 -m pip install --requirement requirements.txt
-
-      - name: Install fixed Lean toolchain
-        run: |
-          timeout 300s curl --connect-timeout 15 --max-time 240 --proto '=https' --tlsv1.2 -sSf -o /tmp/elan-init.sh https://raw.githubusercontent.com/leanprover/elan/464c9d28395000a2a0128e07081e4956d50eced2/elan-init.sh
-          echo "a620ff1641616222c8d37c54845492004bb84d6877cdbc944dd65c1aa685bf53  /tmp/elan-init.sh" | sha256sum --check --strict
-          timeout 600s sh /tmp/elan-init.sh -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-          timeout 900s "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.33.0
-
-      - name: Restore Mathlib cache
-        working-directory: fixtures/lean-proof
-        run: timeout 900s lake exe cache get
-
-      - name: Audit production loop
-        run: python3 scripts/pipeline_maturity_audit.py --strict
-
   poincare-hatcher-vankampen-target-pin:
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -95,16 +39,11 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           p = Path('lakefile.lean')
-          s = p.read_text().replace(
-              '520045ab14e26149ee970e2e617ca04b09bde5d6',
-              'db584cd6d46c92f209a44c0f1c829460d327499d')
-          p.write_text(s)
-
+          p.write_text(p.read_text().replace('520045ab14e26149ee970e2e617ca04b09bde5d6', 'db584cd6d46c92f209a44c0f1c829460d327499d'))
           p = Path('HatcherLib/Ch1/BasicConstructions.lean')
           s = p.read_text()
           old = '(_root_.FundamentalGroup.mapOfEq (ContinuousMap.id Y) h).comp'
-          new = '''(_root_.FundamentalGroup.mapOfEq (ContinuousMap.id Y)
-        (by simpa using h)).comp'''
+          new = "(_root_.FundamentalGroup.mapOfEq (ContinuousMap.id Y)\n        (by simpa using h)).comp"
           if s.count(old) != 2:
               raise SystemExit(f'unexpected mapOfEq identity occurrence count: {s.count(old)}')
           p.write_text(s.replace(old, new))
@@ -113,35 +52,23 @@ jobs:
           import HatcherLib.Ch1.VanKampenGlobalSweep
 
           namespace HatcherLib
-
           noncomputable section
-
           universe u
           variable {X : Type u} [TopologicalSpace X] {x₀ : X}
 
-          /-- For a two-set cover, pairwise path-connectedness already gives the
-          triple-intersection hypothesis required by the adapted-grid sweep. -/
           theorem boolCover_tripleIntersectionsPathConnected
               (cover : PathConnectedOpenCover x₀ Bool) :
               VanKampenTripleIntersectionsPathConnected cover := by
             intro i j k
             cases i <;> cases j <;> cases k
-            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using
-                cover.pathConnected false
-            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using
-                cover.interPathConnected false true
-            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using
-                cover.interPathConnected false true
-            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using
-                cover.interPathConnected false true
-            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using
-                cover.interPathConnected true false
-            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using
-                cover.interPathConnected true false
-            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using
-                cover.interPathConnected true false
-            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using
-                cover.pathConnected true
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.pathConnected false
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.interPathConnected false true
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.interPathConnected false true
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.interPathConnected false true
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.interPathConnected true false
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.interPathConnected true false
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.interPathConnected true false
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.pathConnected true
 
           end
           end HatcherLib
