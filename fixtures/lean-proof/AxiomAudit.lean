@@ -1,3 +1,9 @@
 import VibeMathingFixture
 
 #print axioms VibeMathingFixture.two_add_two
+#print axioms ClayPoincareAlexander.normalizePt
+#print axioms ClayPoincareAlexander.coneMap
+#print axioms ClayPoincareAlexander.continuous_coneMap
+#print axioms ClayPoincareAlexander.coneMap_comp_coneMap
+#print axioms ClayPoincareAlexander.coneHomeomorph
+#print axioms ClayPoincareAlexander.sphereTwo_homeomorph_extends
