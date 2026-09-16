@@ -48,29 +48,53 @@ p.write_text(s.replace(old, new))
 p = Path('HatcherLib/Ch1/VanKampen.lean')
 s = p.read_text()
 
-# The original definition relies on reducing the image basepoint
-# `(coverInclusion cover i) ⟨x₀, proof⟩` definitionally to `x₀`.
-# Lean 4.33 is more conservative at the free-product elaboration site, so use
-# Mathlib's explicit basepoint-transporting homomorphism. The statement and map
-# on path classes are unchanged.
-old_def = '''  freeProductLift _ fun i =>
+# Lean 4.33 fails to infer the common target basepoint when the component maps
+# are passed anonymously to the dependent free-product lift.  Give each
+# component its exact codomain first, preserving the original FundamentalGroup.map.
+old_def = '''/-- The homomorphism from the free product of the fundamental groups of the
+cover members to the fundamental group of the ambient space. -/
+def vanKampenMap {x₀ : X} {ι : Type v}
+    (cover : PathConnectedOpenCover x₀ ι) :
+    FreeProduct (fun i => CoverFundamentalGroup cover i) →*
+      FundamentalGroup X x₀ :=
+  freeProductLift _ fun i =>
     FundamentalGroup.map (coverInclusion cover i) ⟨x₀, cover.base_mem i⟩'''
-new_def = '''  freeProductLift _ fun i =>
-    FundamentalGroup.mapOfEq (coverInclusion cover i)
-      (by rfl : (coverInclusion cover i) ⟨x₀, cover.base_mem i⟩ = x₀)'''
+new_def = '''/-- The inclusion-induced homomorphism of one cover member, with the
+ambient basepoint codomain made explicit for Lean 4.33 elaboration. -/
+def coverFundamentalGroupInclusion {x₀ : X} {ι : Type v}
+    (cover : PathConnectedOpenCover x₀ ι) (i : ι) :
+    CoverFundamentalGroup cover i →* FundamentalGroup X x₀ :=
+  FundamentalGroup.map (coverInclusion cover i) ⟨x₀, cover.base_mem i⟩
+
+/-- The homomorphism from the free product of the fundamental groups of the
+cover members to the fundamental group of the ambient space. -/
+def vanKampenMap {x₀ : X} {ι : Type v}
+    (cover : PathConnectedOpenCover x₀ ι) :
+    FreeProduct (fun i => CoverFundamentalGroup cover i) →*
+      FundamentalGroup X x₀ :=
+  freeProductLift _ (coverFundamentalGroupInclusion cover)'''
 if s.count(old_def) != 1:
     raise SystemExit(f'unexpected vanKampenMap definition count: {s.count(old_def)}')
 s = s.replace(old_def, new_def)
 
-old_proof = '''  rw [vanKampenMap, freeProductLift, freeProductInclusion,
+old_factor = '''  rw [vanKampenMap, freeProductLift, freeProductInclusion,
     Monoid.CoprodI.lift_of]
   change Path.Homotopic.Quotient.map'''
-new_proof = '''  rw [vanKampenMap, ← MonoidHom.comp_apply, freeProductLift_comp_inclusion,
-    FundamentalGroup.mapOfEq_apply]
+new_factor = '''  rw [vanKampenMap, freeProductLift, freeProductInclusion,
+    Monoid.CoprodI.lift_of, coverFundamentalGroupInclusion]
   change Path.Homotopic.Quotient.map'''
-if s.count(old_proof) != 1:
-    raise SystemExit(f'unexpected vanKampenMap_factor proof block count: {s.count(old_proof)}')
-s = s.replace(old_proof, new_proof)
+if s.count(old_factor) != 1:
+    raise SystemExit(f'unexpected vanKampenMap_factor proof block count: {s.count(old_factor)}')
+s = s.replace(old_factor, new_factor)
+
+old_relator = '''  simp only [vanKampenRelator, map_mul, map_inv, vanKampenMap,
+    freeProductLift, freeProductInclusion, Monoid.CoprodI.lift_of]'''
+new_relator = '''  simp only [vanKampenRelator, map_mul, map_inv, vanKampenMap,
+    freeProductLift, freeProductInclusion, Monoid.CoprodI.lift_of,
+    coverFundamentalGroupInclusion]'''
+if s.count(old_relator) != 1:
+    raise SystemExit(f'unexpected relator simplification count: {s.count(old_relator)}')
+s = s.replace(old_relator, new_relator)
 p.write_text(s)
 PY
 
