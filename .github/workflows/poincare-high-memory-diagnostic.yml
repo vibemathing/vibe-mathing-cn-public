@@ -1,0 +1,41 @@
+name: Poincare high-memory diagnostic
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lean-direct:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install fixed Lean toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --connect-timeout 15 --max-time 240 --proto '=https' --tlsv1.2 -sSf -o /tmp/elan-init.sh https://raw.githubusercontent.com/leanprover/elan/464c9d28395000a2a0128e07081e4956d50eced2/elan-init.sh
+          echo "a620ff1641616222c8d37c54845492004bb84d6877cdbc944dd65c1aa685bf53  /tmp/elan-init.sh" | sha256sum --check --strict
+          sh /tmp/elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.33.0
+
+      - name: Restore pinned Mathlib cache
+        working-directory: fixtures/lean-proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          lake exe cache get
+
+      - name: Direct kernel build
+        working-directory: fixtures/lean-proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .lake/build/lib/lean
+          lake env lean -j1 -o .lake/build/lib/lean/VibeMathingFixture.olean VibeMathingFixture.lean
+          lake env lean -j1 AxiomAudit.lean
