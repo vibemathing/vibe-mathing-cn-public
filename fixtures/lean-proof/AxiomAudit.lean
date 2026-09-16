@@ -1,3 +1,7 @@
 import VibeMathingFixture
 
 #print axioms VibeMathingFixture.two_add_two
+#print axioms ClayPoincareCircle.fundamentalGroupEquivZMultiples
+#print axioms ClayPoincareCircle.nontrivial_zmultiples_one
+#print axioms ClayPoincareCircle.fundamentalGroup_nontrivial
+#print axioms ClayPoincareCircle.addCircle_not_simplyConnectedSpace
