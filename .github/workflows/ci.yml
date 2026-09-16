@@ -2,7 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - tmp-poincare-hatcher-vankampen-target-pin-v3-20260917
   pull_request:
 
 permissions:
