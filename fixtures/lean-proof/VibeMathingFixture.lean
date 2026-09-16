@@ -41,6 +41,13 @@ def PoincareConjecture : Prop :=
     [ChartedSpace Euclidean3 M] [SimplyConnectedSpace M] [CompactSpace M],
     Nonempty (M ≃ₜ Sphere3)
 
+/-- Compactness plus Euclidean-three charts recover the standard
+second-countability convention for manifolds. -/
+theorem secondCountable_of_compact_charted
+    (M : Type*) [TopologicalSpace M] [ChartedSpace Euclidean3 M] [CompactSpace M] :
+    SecondCountableTopology M := by
+  exact ChartedSpace.secondCountable_of_sigmaCompact Euclidean3 M
+
 theorem target_iff_explicit
     (M : Type*) [TopologicalSpace M] [T2Space M]
     [ChartedSpace Euclidean3 M] [SimplyConnectedSpace M] [CompactSpace M] :
