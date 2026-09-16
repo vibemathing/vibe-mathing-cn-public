@@ -1,0 +1,54 @@
+name: Poincare Van Kampen target-pin replay
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  vankampen-target-pin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install fixed Lean toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --connect-timeout 15 --max-time 240 --proto '=https' --tlsv1.2 -sSf -o /tmp/elan-init.sh https://raw.githubusercontent.com/leanprover/elan/464c9d28395000a2a0128e07081e4956d50eced2/elan-init.sh
+          echo "a620ff1641616222c8d37c54845492004bb84d6877cdbc944dd65c1aa685bf53  /tmp/elan-init.sh" | sha256sum --check --strict
+          sh /tmp/elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.33.0
+
+      - name: Assemble target-pin Mathlib plus Van Kampen overlay
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init /tmp/mathlib-target
+          cd /tmp/mathlib-target
+          git remote add origin https://github.com/leanprover-community/mathlib4.git
+          git fetch --depth=1 origin db584cd6d46c92f209a44c0f1c829460d327499d
+          git checkout --detach FETCH_HEAD
+          git remote add vk https://github.com/hanwenzhu/mathlib4.git
+          git fetch --depth=1 vk 9a19745bf2565abbbf56bb38c91bcd26c4c53b49
+          git checkout FETCH_HEAD -- Mathlib/AlgebraicTopology/FundamentalGroupoid/VanKampen
+          test "$(cat lean-toolchain)" = "leanprover/lean4:v4.33.0"
+          git status --short Mathlib/AlgebraicTopology/FundamentalGroupoid/VanKampen
+
+      - name: Restore target-pin Mathlib cache
+        working-directory: /tmp/mathlib-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          lake exe cache get
+
+      - name: Build Van Kampen colimit theorem on target pin
+        working-directory: /tmp/mathlib-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          lake build Mathlib.AlgebraicTopology.FundamentalGroupoid.VanKampen.IsColimit
