@@ -142,14 +142,14 @@ theorem boolCover_tripleIntersectionsPathConnected
     VanKampenTripleIntersectionsPathConnected cover := by
   intro i j k
   cases i <;> cases j <;> cases k
-  · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.pathConnected false
-  · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.interPathConnected false true
-  · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.interPathConnected false true
-  · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.interPathConnected false true
-  · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.interPathConnected true false
-  · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.interPathConnected true false
-  · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.interPathConnected true false
-  · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.pathConnected true
+  · convert cover.pathConnected false using 1 <;> ext x <;> simp
+  · convert cover.interPathConnected false true using 1 <;> ext x <;> simp
+  · convert cover.interPathConnected false true using 1 <;> ext x <;> simp
+  · convert cover.interPathConnected false true using 1 <;> ext x <;> simp
+  · convert cover.interPathConnected true false using 1 <;> ext x <;> simp
+  · convert cover.interPathConnected true false using 1 <;> ext x <;> simp
+  · convert cover.interPathConnected true false using 1 <;> ext x <;> simp
+  · convert cover.pathConnected true using 1 <;> ext x <;> simp
 
 end
 end HatcherLib
