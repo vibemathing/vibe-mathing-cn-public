@@ -1,4 +1,5 @@
 import Mathlib.Data.Nat.Basic
+import Mathlib.Geometry.Manifold.ChartedSpace
 import Mathlib.Topology.Homeomorph.Defs
 
 namespace VibeMathingFixture
@@ -13,7 +14,7 @@ end VibeMathingFixture
 /-!
 Temporary target-type diagnostic for `problem:clay-poincare`.
 This probe isolates the homeomorphism proposition itself, with no manifold
-assumptions. The standard 3-sphere is encoded as the unit sphere in `Fin 4 → ℝ`.
+assumptions, while keeping the already-verified lightweight real-topology import.
 -/
 
 namespace ClayPoincare
