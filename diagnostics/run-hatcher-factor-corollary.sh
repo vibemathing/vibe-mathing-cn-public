@@ -4,6 +4,8 @@ set -euo pipefail
 # First replay the migrated Hatcher Van Kampen development on the exact mission pin.
 bash diagnostics/run-hatcher-exact-pin.sh
 
+# The child replay installs elan but its exported PATH does not escape the child shell.
+export PATH="$HOME/.elan/bin:$PATH"
 cd /tmp/poincare-src/formalized-sources/Hatcher
 cat > HatcherLib/Ch1/PoincareVanKampenCorollary.lean <<'LEAN'
 import HatcherLib.Ch1.PoincareVanKampenBridge
