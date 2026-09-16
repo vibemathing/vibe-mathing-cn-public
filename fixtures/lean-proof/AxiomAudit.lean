@@ -2,3 +2,4 @@ import VibeMathingFixture
 
 #print axioms VibeMathingFixture.two_add_two
 #print axioms ClayPoincareProduct.FundamentalGroup.prodMulEquiv
+#print axioms ClayPoincareProduct.prod_not_simplyConnectedSpace_of_nontrivial_fundamentalGroup
