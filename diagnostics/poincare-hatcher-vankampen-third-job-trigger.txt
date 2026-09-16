@@ -1,0 +1,2 @@
+Disposable synchronize trigger after adding the Hatcher exact-pin CI job and Bool-cover bridge.
+DO NOT MERGE.
