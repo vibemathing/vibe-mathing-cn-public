@@ -54,13 +54,18 @@ lemma coneMap_of_ne_zero {n : ℕ} (f : Sph n → Sph n) {x : E n} (hx : x ≠ 0
     ‖coneMap f x‖ = ‖x‖ := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp
-  · rw [coneMap_of_ne_zero f hx, norm_smul, norm_coe_unitSphere]
+  · have hfunit : ‖(f (normalizePt hx) : E n)‖ = 1 :=
+      mem_sphere_zero_iff_norm.mp (f (normalizePt hx)).property
+    rw [coneMap_of_ne_zero f hx, norm_smul, hfunit]
     simp
 
 lemma coneMap_coe_sphere {n : ℕ} (f : Sph n → Sph n) (x : Sph n) :
     coneMap f (x : E n) = f x := by
-  have hx : (x : E n) ≠ 0 := coe_unitSphere_ne_zero x
-  have hn : ‖(x : E n)‖ = 1 := norm_coe_unitSphere x
+  have hn : ‖(x : E n)‖ = 1 := mem_sphere_zero_iff_norm.mp x.property
+  have hx : (x : E n) ≠ 0 := by
+    intro hx0
+    rw [hx0, norm_zero] at hn
+    norm_num at hn
   have hpt : normalizePt hx = x := by
     apply Subtype.ext
     simp [hn]
@@ -86,8 +91,8 @@ lemma continuous_coneMap {n : ℕ} {f : Sph n → Sph n} (hf : Continuous f) :
     simpa using (continuous_norm (E := E n)).tendsto' 0 0 (by simp)
   · have hopen : IsOpen {y : E n | y ≠ 0} := isOpen_ne
     have hcont : ContinuousOn (coneMap f) {y : E n | y ≠ 0} := by
-      rw [continuousOn_iff_continuous_restrict]
-      have hrestr : Set.restrict {y : E n | y ≠ 0} (coneMap f)
+      rw [continuousOn_iff_continuous_domRestrict]
+      have hrestr : ({y : E n | y ≠ 0}.domRestrict (coneMap f))
           = fun p : {y : E n // y ∈ {y : E n | y ≠ 0}} =>
             ‖(p : E n)‖ • (f (radialProj ⟨p.1, p.2⟩) : E n) := by
         funext p
