@@ -49,7 +49,7 @@ p = Path('HatcherLib/Ch1/VanKampen.lean')
 s = p.read_text()
 
 # Lean 4.33 fails to infer the common target basepoint when the component maps
-# are passed anonymously to the dependent free-product lift.  Give each
+# are passed anonymously to the dependent free-product lift. Give each
 # component its exact codomain first, preserving the original FundamentalGroup.map.
 old_def = '''/-- The homomorphism from the free product of the fundamental groups of the
 cover members to the fundamental group of the ambient space. -/
@@ -95,6 +95,36 @@ new_relator = '''  simp only [vanKampenRelator, map_mul, map_inv, vanKampenMap,
 if s.count(old_relator) != 1:
     raise SystemExit(f'unexpected relator simplification count: {s.count(old_relator)}')
 s = s.replace(old_relator, new_relator)
+p.write_text(s)
+
+# Two map-forgetfulness lemmas in VanKampenSweep are pointwise definitional
+# equalities.  The source proof rewrites through dependent arguments carrying
+# proof terms; Lean 4.33 is more sensitive to those proof-term shapes.  Prove
+# the same path equalities extensionally and let proof irrelevance erase them.
+p = Path('HatcherLib/Ch1/VanKampenSweep.lean')
+s = p.read_text()
+old_h = '''  unfold horizontalBasedEdgeInCell horizontalEdgeLoop
+  rw [Path.map_trans, Path.map_trans, ← Path.map_symm,
+    grid.vertexConnectorInCell_map, grid.horizontalEdgeInCell_map,
+    grid.vertexConnectorInCell_map]
+  apply Path.ext
+  rfl'''
+new_h = '''  ext t
+  rfl'''
+if s.count(old_h) != 1:
+    raise SystemExit(f'unexpected horizontal sweep proof count: {s.count(old_h)}')
+s = s.replace(old_h, new_h)
+old_v = '''  unfold verticalBasedEdgeInCell verticalEdgeLoop
+  rw [Path.map_trans, Path.map_trans, ← Path.map_symm,
+    grid.vertexConnectorInCell_map, grid.verticalEdgeInCell_map,
+    grid.vertexConnectorInCell_map]
+  apply Path.ext
+  rfl'''
+new_v = '''  ext t
+  rfl'''
+if s.count(old_v) != 1:
+    raise SystemExit(f'unexpected vertical sweep proof count: {s.count(old_v)}')
+s = s.replace(old_v, new_v)
 p.write_text(s)
 PY
 
