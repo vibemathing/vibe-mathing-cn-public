@@ -5,4 +5,5 @@ import VibeMathingFixture
 #print axioms ClayPoincare.Sphere3
 #print axioms ClayPoincare.Target
 #print axioms ClayPoincare.PoincareConjecture
+#print axioms ClayPoincare.secondCountable_of_compact_charted
 #print axioms ClayPoincare.target_iff_explicit
