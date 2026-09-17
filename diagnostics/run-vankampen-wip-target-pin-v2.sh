@@ -8,20 +8,14 @@ from pathlib import Path
 
 src = Path('diagnostics/run-vankampen-wip-target-pin.sh').read_text()
 
-# Lean 4.33 has trouble reinterpreting the quotient representative `g` as a
-# categorical hom when applying Category.comp_id.  Stay in the concrete
-# FundamentalGroupoid representation and use the already-proved quotient
-# identity laws directly.  This changes elaboration only, not the mathematics.
+# Lean 4.33 has trouble reducing the FundamentalGroupoid bundled-object layer
+# at the two identity-sandwich steps.  Keep the upstream proof `by simp` and
+# enable the same backward-defeq compatibility mode below that already made
+# ComposeMorphisms and CompositionFinal compile.  This changes elaboration
+# only, not the theorem statement or mathematical assumptions.
 old = '''              = 𝟙 x ≫ g ≫ 𝟙 y := by
                   simpa only [Category.id_comp] using (Category.comp_id g).symm'''
-new = '''              = 𝟙 x ≫ g ≫ 𝟙 y := by
-                  change g =
-                    Path.Homotopic.Quotient.trans
-                      (Path.Homotopic.Quotient.trans
-                        (Path.Homotopic.Quotient.refl x.as) g)
-                      (Path.Homotopic.Quotient.refl y.as)
-                  rw [Path.Homotopic.Quotient.refl_trans,
-                    Path.Homotopic.Quotient.trans_refl]'''
+new = '''              = 𝟙 x ≫ g ≫ 𝟙 y := by simp'''
 if src.count(old) != 1:
     raise SystemExit(f'unexpected uniqueness runner patch count: {src.count(old)}')
 src = src.replace(old, new, 1)
@@ -30,6 +24,15 @@ src = src.replace(old, new, 1)
 # made ComposeMorphisms compile.  With this setting the two eqToHom_trans simp
 # calls fully close their goals, so remove the now-superfluous exact tactics.
 inject = r'''
+
+p = Path('Mathlib/AlgebraicTopology/FundamentalGroupoid/VanKampen/UniquenessProofs.lean')
+s = p.read_text()
+anchor = 'open scoped unitInterval\n\nnoncomputable section'
+if anchor not in s:
+    raise SystemExit('UniquenessProofs transparency anchor not found')
+s = s.replace(anchor,
+    'open scoped unitInterval\n\nset_option backward.isDefEq.respectTransparency false\n\nnoncomputable section', 1)
+p.write_text(s)
 
 p = Path('Mathlib/AlgebraicTopology/FundamentalGroupoid/VanKampen/SingleCoveredSimple.lean')
 s = p.read_text()
