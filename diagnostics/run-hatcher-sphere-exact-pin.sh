@@ -5,6 +5,21 @@ bash diagnostics/run-hatcher-exact-pin.sh
 export PATH="$HOME/.elan/bin:$PATH"
 cd /tmp/poincare-src/formalized-sources/Hatcher
 
+# Sphere.lean does not use HomotopyApplications declarations for the sphere
+# simple-connectivity / punctured-space results audited below.  That import
+# transitively pulls in Circle.lean, whose older source has independent
+# Lean-4.33 transport migration failures.  Remove only this redundant import
+# in the disposable exact-pin replay; theorem bodies remain unchanged.
+python3 - <<'PY'
+from pathlib import Path
+p = Path('HatcherLib/Ch1/Sphere.lean')
+s = p.read_text()
+old = 'import HatcherLib.Ch1.HomotopyApplications\n'
+if s.count(old) != 1:
+    raise SystemExit(f'unexpected HomotopyApplications import count: {s.count(old)}')
+p.write_text(s.replace(old, '', 1))
+PY
+
 if grep -nE '\b(sorry|admit|axiom|unsafe)\b' HatcherLib/Ch1/Sphere.lean; then
   echo 'unexpected proof escape in Sphere.lean' >&2
   exit 1
