@@ -32,18 +32,14 @@ from pathlib import Path
 
 p = Path('Mathlib/AlgebraicTopology/FundamentalGroupoid/VanKampen/ComposeMorphisms.lean')
 s = p.read_text()
-# These two proofs are dependent-category transport proofs. Lean 4.33 reports
-# that intermediate expressions are only type-correct after semireducible
-# definitions (`let`-bound object families and Fin casts) are unfolded. Mathlib
-# itself uses this scoped compatibility option for such 4.33 elaboration cases.
-for decl in [
-    'lemma comp_list_extend {k : ℕ}',
-    'theorem comp_list_concat_explicit {n m : ℕ}',
-]:
-    if s.count(decl) != 1:
-        raise SystemExit(f'unexpected declaration count for {decl!r}: {s.count(decl)}')
-    s = s.replace(decl,
-        'set_option backward.isDefEq.respectTransparency false in\n' + decl, 1)
+# Lean 4.33 is stricter about dependent object transports in this WIP source.
+# Apply the same backward-defeq transparency relaxation used elsewhere in pinned
+# Mathlib, at file scope in this disposable overlay. Statements are unchanged.
+anchor = 'lemma comp_list_zero {objs : Fin 1 → C}'
+if anchor not in s:
+    raise SystemExit('ComposeMorphisms anchor not found')
+s = s.replace(anchor,
+    'set_option backward.isDefEq.respectTransparency false\n\n' + anchor, 1)
 
 # Normalize category reassociation explicitly instead of relying on 4.32
 # definitional equality.
@@ -87,10 +83,11 @@ old='''    -- Now simplify using associativity and proof irrelevance
     (try { congr <;> exact Subsingleton.elim _ _ })
     <;>
     aesop'''
-new='''    -- Normalize categorical transports; the remaining goals are equality or
-    -- heterogeneous equality between proof terms.  Mathlib's `subsingleton`
-    -- tactic handles both ordinary proof irrelevance and `proof_irrel_heq`.
-    simp [Category.assoc, eqToHom_trans] <;> subsingleton'''
+new='''    -- Normalize equality transports using the local proof-irrelevance lemma.
+    -- The remaining morphism equality is then the naturality equality already
+    -- established above; do not ask for a Subsingleton instance on the hom-set.
+    simp [Category.assoc, eqToHom_trans, h_irrel]
+    <;> aesop'''
 if old not in s:
     raise SystemExit('expected SingleCoveredSimple tail not found')
 p.write_text(s.replace(old,new,1))
