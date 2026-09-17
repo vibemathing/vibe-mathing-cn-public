@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+bash diagnostics/run-hatcher-exact-pin.sh
+export PATH="$HOME/.elan/bin:$PATH"
+cd /tmp/poincare-src/formalized-sources/Hatcher
+cat > HatcherLib/Ch1/PoincareVanKampenCorollary.lean <<'LEAN'
+import HatcherLib.Ch1.PoincareVanKampenBridge
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+
+namespace HatcherLib
+
+noncomputable section
+
+universe u v
+variable {X : Type u} [TopologicalSpace X] {x₀ : X}
+
+theorem vanKampenNormalSubgroup_eq_bot_of_intersections_subsingleton
+    {ι : Type v} (cover : PathConnectedOpenCover x₀ ι)
+    (hinter : ∀ i j, Subsingleton (CoverIntersectionFundamentalGroup cover i j)) :
+    vanKampenNormalSubgroup cover = ⊥ := by
+  apply le_antisymm
+  · apply Subgroup.normalClosure_le_normal
+    intro r hr
+    rcases hr with ⟨i, j, w, rfl⟩
+    have hw : w = 1 := @Subsingleton.elim _ (hinter i j) w 1
+    subst w
+    have hleft :
+        coverIntersectionToLeft cover i j
+            (1 : CoverIntersectionFundamentalGroup cover i j) = 1 :=
+      (coverIntersectionToLeft cover i j).map_one
+    have hright :
+        coverIntersectionToRight cover i j
+            (1 : CoverIntersectionFundamentalGroup cover i j) = 1 :=
+      (coverIntersectionToRight cover i j).map_one
+    rw [vanKampenRelator, hleft, hright,
+      (freeProductInclusion (fun k => CoverFundamentalGroup cover k) i).map_one,
+      (freeProductInclusion (fun k => CoverFundamentalGroup cover k) j).map_one]
+    simp
+  · exact bot_le
+
+theorem coverFundamentalGroup_subsingleton_of_vanKampen_ker
+    {ι : Type v} (cover : PathConnectedOpenCover x₀ ι)
+    [Subsingleton (FundamentalGroup X x₀)]
+    (hinter : ∀ i j, Subsingleton (CoverIntersectionFundamentalGroup cover i j))
+    (hker : MonoidHom.ker (vanKampenMap cover) = vanKampenNormalSubgroup cover)
+    (i : ι) : Subsingleton (CoverFundamentalGroup cover i) := by
+  let G := fun j => CoverFundamentalGroup cover j
+  have hnormal : vanKampenNormalSubgroup cover = ⊥ :=
+    vanKampenNormalSubgroup_eq_bot_of_intersections_subsingleton cover hinter
+  refine ⟨fun a b => ?_⟩
+  apply Monoid.CoprodI.of_injective i
+  have ha_map :
+      vanKampenMap cover ((Monoid.CoprodI.of : G i →* Monoid.CoprodI G) a) = 1 :=
+    Subsingleton.elim _ _
+  have hb_map :
+      vanKampenMap cover ((Monoid.CoprodI.of : G i →* Monoid.CoprodI G) b) = 1 :=
+    Subsingleton.elim _ _
+  have ha_mem :
+      (Monoid.CoprodI.of : G i →* Monoid.CoprodI G) a ∈
+        MonoidHom.ker (vanKampenMap cover) :=
+    MonoidHom.mem_ker.mpr ha_map
+  have hb_mem :
+      (Monoid.CoprodI.of : G i →* Monoid.CoprodI G) b ∈
+        MonoidHom.ker (vanKampenMap cover) :=
+    MonoidHom.mem_ker.mpr hb_map
+  rw [hker, hnormal] at ha_mem hb_mem
+  have ha_one : (Monoid.CoprodI.of : G i →* Monoid.CoprodI G) a = 1 := by
+    simpa using ha_mem
+  have hb_one : (Monoid.CoprodI.of : G i →* Monoid.CoprodI G) b = 1 := by
+    simpa using hb_mem
+  exact ha_one.trans hb_one.symm
+
+theorem boolCover_factors_basepoint_subsingleton
+    (cover : PathConnectedOpenCover x₀ Bool) [SimplyConnectedSpace X]
+    (hinter : ∀ i j, Subsingleton (CoverIntersectionFundamentalGroup cover i j))
+    (hker : MonoidHom.ker (vanKampenMap cover) = vanKampenNormalSubgroup cover) :
+    Subsingleton (CoverFundamentalGroup cover false) ∧
+      Subsingleton (CoverFundamentalGroup cover true) := by
+  exact ⟨coverFundamentalGroup_subsingleton_of_vanKampen_ker cover hinter hker false,
+    coverFundamentalGroup_subsingleton_of_vanKampen_ker cover hinter hker true⟩
+
+theorem coverMember_simplyConnectedSpace_of_basepoint_subsingleton
+    {ι : Type v} (cover : PathConnectedOpenCover x₀ ι) (i : ι)
+    [Subsingleton (CoverFundamentalGroup cover i)] :
+    SimplyConnectedSpace (cover.carrier i) := by
+  letI : PathConnectedSpace (cover.carrier i) :=
+    isPathConnected_iff_pathConnectedSpace.mp (cover.pathConnected i)
+  rw [simply_connected_iff_loops_nullhomotopic]
+  refine ⟨inferInstance, ?_⟩
+  intro x γ
+  let base : cover.carrier i := ⟨x₀, cover.base_mem i⟩
+  have hbase : Subsingleton (FundamentalGroup (cover.carrier i) base) := by
+    dsimp [base]
+    infer_instance
+  let e : FundamentalGroup (cover.carrier i) base ≃*
+      FundamentalGroup (cover.carrier i) x :=
+    FundamentalGroup.fundamentalGroupMulEquivOfPathConnected base x
+  letI : Subsingleton (FundamentalGroup (cover.carrier i) x) :=
+    ⟨fun a b => e.symm.injective (hbase.elim (e.symm a) (e.symm b))⟩
+  apply Path.Homotopic.Quotient.exact
+  change (FundamentalGroup.fromPath (Path.Homotopic.Quotient.mk γ) :
+      FundamentalGroup (cover.carrier i) x) =
+    FundamentalGroup.fromPath (Path.Homotopic.Quotient.mk (Path.refl x))
+  exact Subsingleton.elim _ _
+
+theorem boolCover_factors_simplyConnectedSpace
+    (cover : PathConnectedOpenCover x₀ Bool) [SimplyConnectedSpace X]
+    (hinter : ∀ i j, Subsingleton (CoverIntersectionFundamentalGroup cover i j))
+    (hker : MonoidHom.ker (vanKampenMap cover) = vanKampenNormalSubgroup cover) :
+    SimplyConnectedSpace (cover.carrier false) ∧
+      SimplyConnectedSpace (cover.carrier true) := by
+  have hbase := boolCover_factors_basepoint_subsingleton cover hinter hker
+  letI : Subsingleton (CoverFundamentalGroup cover false) := hbase.1
+  letI : Subsingleton (CoverFundamentalGroup cover true) := hbase.2
+  exact ⟨coverMember_simplyConnectedSpace_of_basepoint_subsingleton cover false,
+    coverMember_simplyConnectedSpace_of_basepoint_subsingleton cover true⟩
+
+#print axioms vanKampenNormalSubgroup_eq_bot_of_intersections_subsingleton
+#print axioms coverFundamentalGroup_subsingleton_of_vanKampen_ker
+#print axioms boolCover_factors_basepoint_subsingleton
+#print axioms coverMember_simplyConnectedSpace_of_basepoint_subsingleton
+#print axioms boolCover_factors_simplyConnectedSpace
+
+end
+
+end HatcherLib
+LEAN
+
+lake build HatcherLib.Ch1.PoincareVanKampenCorollary
+lake env lean -j1 HatcherLib/Ch1/PoincareVanKampenCorollary.lean

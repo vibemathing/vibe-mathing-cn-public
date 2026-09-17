@@ -1,0 +1,21 @@
+name: Poincare Hatcher sphere exact-pin replay
+
+on:
+  push:
+    branches:
+      - tmp-poincare-hatcher-sphere-exact-pin-20260917
+
+permissions:
+  contents: read
+
+jobs:
+  hatcher-sphere-target-pin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Replay sphere simple-connectivity and punctured-space π₁ on exact pin
+        shell: bash
+        run: bash diagnostics/run-hatcher-sphere-exact-pin.sh
