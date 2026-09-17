@@ -55,7 +55,7 @@ if anchor not in s:
     raise SystemExit('CompositionFinal transparency anchor not found')
 s = s.replace(anchor,
     'open scoped unitInterval\n\nset_option backward.isDefEq.respectTransparency false\n\nnoncomputable section', 1)
-old_middle = '''      rw [h_comp]\n      exact h_eqToHom_congr _ _'''
+old_middle = '      rw [h_comp]\n      exact h_eqToHom_congr _ _'
 if s.count(old_middle) != 1:
     raise SystemExit(f'unexpected CompositionFinal h_middle patch count: {s.count(old_middle)}')
 s = s.replace(old_middle, '      rw [h_comp]', 1)
