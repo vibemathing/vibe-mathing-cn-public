@@ -32,8 +32,21 @@ from pathlib import Path
 
 p = Path('Mathlib/AlgebraicTopology/FundamentalGroupoid/VanKampen/ComposeMorphisms.lean')
 s = p.read_text()
-# Lean 4.33 no longer accepts several category reassociations by the final `rfl`.
-# Normalize these equalities explicitly with the associativity simp lemma.
+# These two proofs are dependent-category transport proofs. Lean 4.33 reports
+# that intermediate expressions are only type-correct after semireducible
+# definitions (`let`-bound object families and Fin casts) are unfolded. Mathlib
+# itself uses this scoped compatibility option for such 4.33 elaboration cases.
+for decl in [
+    'lemma comp_list_extend {k : ℕ}',
+    'theorem comp_list_concat_explicit {n m : ℕ}',
+]:
+    if s.count(decl) != 1:
+        raise SystemExit(f'unexpected declaration count for {decl!r}: {s.count(decl)}')
+    s = s.replace(decl,
+        'set_option backward.isDefEq.respectTransparency false in\n' + decl, 1)
+
+# Normalize category reassociation explicitly instead of relying on 4.32
+# definitional equality.
 repls = {
 '''  have h_step2 : eqToHom h0.symm ≫ (comp_list k objs_mid homs_mid ≫ homs' (Fin.last k)) ≫ eqToHom h_last =
       (eqToHom h0.symm ≫ comp_list k objs_mid homs_mid) ≫ (homs' (Fin.last k) ≫ eqToHom h_last) := by
@@ -74,13 +87,10 @@ old='''    -- Now simplify using associativity and proof irrelevance
     (try { congr <;> exact Subsingleton.elim _ _ })
     <;>
     aesop'''
-new='''    -- Normalize all categorical reassociation and equality transports.
-    simp only [Category.assoc, eqToHom_trans, eqToHom_refl,
-      Category.id_comp, Category.comp_id]
-    all_goals
-      first
-      | rfl
-      | congr <;> exact Subsingleton.elim _ _'''
+new='''    -- Normalize categorical transports; the remaining goals are equality or
+    -- heterogeneous equality between proof terms.  Mathlib's `subsingleton`
+    -- tactic handles both ordinary proof irrelevance and `proof_irrel_heq`.
+    simp [Category.assoc, eqToHom_trans] <;> subsingleton'''
 if old not in s:
     raise SystemExit('expected SingleCoveredSimple tail not found')
 p.write_text(s.replace(old,new,1))
