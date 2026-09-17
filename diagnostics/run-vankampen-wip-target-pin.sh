@@ -32,17 +32,11 @@ from pathlib import Path
 
 p = Path('Mathlib/AlgebraicTopology/FundamentalGroupoid/VanKampen/ComposeMorphisms.lean')
 s = p.read_text()
-# Lean 4.33 is stricter about dependent object transports in this WIP source.
-# Apply the same backward-defeq transparency relaxation used elsewhere in pinned
-# Mathlib, at file scope in this disposable overlay. Statements are unchanged.
 anchor = 'open CategoryTheory\nvariable {C : Type*} [Groupoid C]'
 if anchor not in s:
     raise SystemExit('ComposeMorphisms anchor not found')
 s = s.replace(anchor,
     anchor + '\nset_option backward.isDefEq.respectTransparency false', 1)
-
-# Normalize category reassociation explicitly instead of relying on 4.32
-# definitional equality.
 repls = {
 '''  have h_step2 : eqToHom h0.symm ≫ (comp_list k objs_mid homs_mid ≫ homs' (Fin.last k)) ≫ eqToHom h_last =
       (eqToHom h0.symm ≫ comp_list k objs_mid homs_mid) ≫ (homs' (Fin.last k) ≫ eqToHom h_last) := by
@@ -75,22 +69,86 @@ for old,new in repls.items():
     s=s.replace(old,new,1)
 p.write_text(s)
 
+# Lean 4.33 no longer closes the two identity-sandwich steps in the uniqueness
+# calculation with an unqualified `simp`; spell out the categorical identity
+# law while leaving the theorem statement and mathematical proof unchanged.
+p = Path('Mathlib/AlgebraicTopology/FundamentalGroupoid/VanKampen/UniquenessProofs.lean')
+s = p.read_text()
+old = '''            g
+              = 𝟙 x ≫ g ≫ 𝟙 y := by simp'''
+new = '''            g
+              = 𝟙 x ≫ g ≫ 𝟙 y := by
+                  simpa only [Category.id_comp] using (Category.comp_id g).symm'''
+if s.count(old) != 2:
+    raise SystemExit(f'unexpected uniqueness identity-sandwich count: {s.count(old)}')
+s = s.replace(old, new)
+p.write_text(s)
+
 p = Path('Mathlib/AlgebraicTopology/FundamentalGroupoid/VanKampen/SingleCoveredSimple.lean')
-s=p.read_text()
-old='''    -- Now simplify using associativity and proof irrelevance
+s = p.read_text()
+old = '''    -- Now simplify using associativity and proof irrelevance
     simp [Category.assoc, eqToHom_trans]
     <;>
     (try { congr <;> exact Subsingleton.elim _ _ })
     <;>
     aesop'''
-new='''    -- Normalize equality transports using the local proof-irrelevance lemma.
-    -- The remaining morphism equality is then the naturality equality already
-    -- established above; do not ask for a Subsingleton instance on the hom-set.
-    simp [Category.assoc, eqToHom_trans, h_irrel]
-    <;> aesop'''
-if old not in s:
-    raise SystemExit('expected SingleCoveredSimple tail not found')
-p.write_text(s.replace(old,new,1))
+new = '''    -- Collapse the three equality transports on each side explicitly.
+    -- This avoids asking automation to solve a dependent `HEq` goal.
+    have h_irrel : ∀ {A B : s.pt} (p q : A = B), eqToHom p = eqToHom q := by
+      intro A B p q
+      congr <;> exact Subsingleton.elim _ _
+    have h_left :
+        eqToHom h_eq_x.symm ≫
+            (eqToHom h_eq1_W.symm ≫
+              eqToHom (congr_arg
+                (fun (K : _ ⥤ _) =>
+                  K.obj (FundamentalGroupoid.mk (⟨x, hxW⟩ : W_set)))
+                h_nat.symm)) =
+          eqToHom h_eq1_U.symm := by
+      simp only [eqToHom_trans]
+      exact h_irrel _ _
+    have h_right :
+        eqToHom (congr_arg
+              (fun (K : _ ⥤ _) =>
+                K.obj (FundamentalGroupoid.mk (⟨y, hyW⟩ : W_set)))
+              h_nat.symm).symm ≫
+            (eqToHom h_eq2_W ≫ eqToHom h_eq_y) =
+          eqToHom h_eq2_U := by
+      simp only [eqToHom_trans]
+      exact h_irrel _ _
+    dsimp [f_U_core]
+    calc
+      eqToHom h_eq_x.symm ≫
+          (eqToHom h_eq1_W.symm ≫
+            (eqToHom (congr_arg
+                (fun (K : _ ⥤ _) =>
+                  K.obj (FundamentalGroupoid.mk (⟨x, hxW⟩ : W_set)))
+                h_nat.symm) ≫
+              F_U.map γ_U_class ≫
+              eqToHom (congr_arg
+                (fun (K : _ ⥤ _) =>
+                  K.obj (FundamentalGroupoid.mk (⟨y, hyW⟩ : W_set)))
+                h_nat.symm).symm) ≫
+            eqToHom h_eq2_W) ≫ eqToHom h_eq_y
+        = (eqToHom h_eq_x.symm ≫
+            (eqToHom h_eq1_W.symm ≫
+              eqToHom (congr_arg
+                (fun (K : _ ⥤ _) =>
+                  K.obj (FundamentalGroupoid.mk (⟨x, hxW⟩ : W_set)))
+                h_nat.symm))) ≫
+            F_U.map γ_U_class ≫
+            (eqToHom (congr_arg
+                (fun (K : _ ⥤ _) =>
+                  K.obj (FundamentalGroupoid.mk (⟨y, hyW⟩ : W_set)))
+                h_nat.symm).symm ≫
+              (eqToHom h_eq2_W ≫ eqToHom h_eq_y)) := by
+            simp only [Category.assoc]
+      _ = eqToHom h_eq1_U.symm ≫ F_U.map γ_U_class ≫ eqToHom h_eq2_U := by
+            rw [h_left, h_right]'''
+if s.count(old) != 1:
+    raise SystemExit(f'unexpected SingleCoveredSimple tail count: {s.count(old)}')
+s = s.replace(old, new, 1)
+p.write_text(s)
 PY
 
 lake exe cache get
