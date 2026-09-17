@@ -16,6 +16,6 @@ jobs:
       - name: Checkout harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Run exact-pin Hatcher migration, factor corollary, and rectangle probe
+      - name: Run exact-pin Hatcher migration through full rectangle row composition
         shell: bash
-        run: bash diagnostics/run-hatcher-rectangle-assembly.sh
+        run: bash diagnostics/run-hatcher-rectangle-composition.sh
