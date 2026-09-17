@@ -8,15 +8,20 @@ from pathlib import Path
 
 src = Path('diagnostics/run-vankampen-wip-target-pin.sh').read_text()
 
-# Lean 4.33 leaves the right identity goal after simplifying the left identity.
-# Give `g` its FundamentalGroupoid hom type explicitly, then apply the category
-# right-unit theorem as an exact proof instead of relying on simp transparency.
+# Lean 4.33 has trouble reinterpreting the quotient representative `g` as a
+# categorical hom when applying Category.comp_id.  Stay in the concrete
+# FundamentalGroupoid representation and use the already-proved quotient
+# identity laws directly.  This changes elaboration only, not the mathematics.
 old = '''              = 𝟙 x ≫ g ≫ 𝟙 y := by
                   simpa only [Category.id_comp] using (Category.comp_id g).symm'''
 new = '''              = 𝟙 x ≫ g ≫ 𝟙 y := by
-                  change (g : x ⟶ y) = 𝟙 x ≫ (g : x ⟶ y) ≫ 𝟙 y
-                  rw [Category.id_comp]
-                  exact (Category.comp_id (g : x ⟶ y)).symm'''
+                  change g =
+                    Path.Homotopic.Quotient.trans
+                      (Path.Homotopic.Quotient.trans
+                        (Path.Homotopic.Quotient.refl x.as) g)
+                      (Path.Homotopic.Quotient.refl y.as)
+                  rw [Path.Homotopic.Quotient.refl_trans,
+                    Path.Homotopic.Quotient.trans_refl]'''
 if src.count(old) != 1:
     raise SystemExit(f'unexpected uniqueness runner patch count: {src.count(old)}')
 src = src.replace(old, new, 1)
@@ -37,6 +42,23 @@ old_tail = '      simp only [eqToHom_trans]\n      exact h_irrel _ _'
 if s.count(old_tail) != 2:
     raise SystemExit(f'unexpected SingleCoveredSimple closed-goal tail count: {s.count(old_tail)}')
 s = s.replace(old_tail, '      simp only [eqToHom_trans]')
+p.write_text(s)
+
+# CompositionFinal reaches only a definitional-equality residue on Lean 4.33.
+# Use the same compatibility mode as ComposeMorphisms.  In h_middle, rw
+# [h_comp] now closes the proof by proof irrelevance, so the following exact is
+# a stale tactic and must be removed.
+p = Path('Mathlib/AlgebraicTopology/FundamentalGroupoid/VanKampen/CompositionFinal.lean')
+s = p.read_text()
+anchor = 'open scoped unitInterval\n\nnoncomputable section'
+if anchor not in s:
+    raise SystemExit('CompositionFinal transparency anchor not found')
+s = s.replace(anchor,
+    'open scoped unitInterval\n\nset_option backward.isDefEq.respectTransparency false\n\nnoncomputable section', 1)
+old_middle = '''      rw [h_comp]\n      exact h_eqToHom_congr _ _'''
+if s.count(old_middle) != 1:
+    raise SystemExit(f'unexpected CompositionFinal h_middle patch count: {s.count(old_middle)}')
+s = s.replace(old_middle, '      rw [h_comp]', 1)
 p.write_text(s)
 '''
 marker = "PY\n\nlake exe cache get"
