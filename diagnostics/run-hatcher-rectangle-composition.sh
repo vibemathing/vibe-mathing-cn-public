@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-bash diagnostics/run-hatcher-rectangle-assembly.sh
+bash diagnostics/run-hatcher-row-glue.sh
 export PATH="$HOME/.elan/bin:$PATH"
 cd /tmp/poincare-src/formalized-sources/Hatcher
 
 cat > HatcherLib/Ch1/PoincareVanKampenRectangleComposition.lean <<'LEAN'
-import HatcherLib.Ch1.PoincareVanKampenRectangle
+import HatcherLib.Ch1.PoincareVanKampenRows
 
 namespace HatcherLib
 
