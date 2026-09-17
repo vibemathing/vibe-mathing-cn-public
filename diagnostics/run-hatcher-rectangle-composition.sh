@@ -35,12 +35,8 @@ theorem composable_of_ofFn_adjacent {x₀ : X} {ι : Type v}
           simp [List.ofFn_succ, List.ofFn_zero, Composable]
       | succ n =>
           rw [List.ofFn_succ, List.ofFn_succ]
-          change
-            VanKampenWordEquivalent cover (f 0).top (f 1).bottom ∧
-              Composable
-                ((List.ofFn fun i : Fin (n + 1) => f i.succ))
-          constructor
-          · exact hadj 0 1 (by rfl)
+          refine ⟨?_, ?_⟩
+          · exact hadj 0 (Fin.succ 0) (by rfl)
           · apply ih
             intro i j hij
             apply hadj i.succ j.succ
