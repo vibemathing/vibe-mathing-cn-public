@@ -2,63 +2,105 @@ name: CI
 
 on:
   push:
-    branches: [main]
-  pull_request:
+    branches:
+      - tmp-poincare-hatcher-vankampen-target-pin-v3-20260917
 
 permissions:
   contents: read
 
-concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  validate:
+  poincare-hatcher-vankampen-target-pin:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 45
     steps:
-      - name: Checkout
+      - name: Checkout harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.12"
-          cache: pip
-
-      - name: Install dependencies
-        run: python3 -m pip install --requirement requirements.txt
-
-      - name: Run portable quality gate
-        run: make check
-
-  production-loop:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.12"
-          cache: pip
-
-      - name: Install Python dependencies
-        run: python3 -m pip install --requirement requirements.txt
-
-      - name: Install fixed Lean toolchain
+      - name: Install exact target Lean toolchain
+        shell: bash
         run: |
-          timeout 300s curl --connect-timeout 15 --max-time 240 --proto '=https' --tlsv1.2 -sSf -o /tmp/elan-init.sh https://raw.githubusercontent.com/leanprover/elan/464c9d28395000a2a0128e07081e4956d50eced2/elan-init.sh
+          set -euo pipefail
+          curl --connect-timeout 15 --max-time 240 --proto '=https' --tlsv1.2 -sSf -o /tmp/elan-init.sh https://raw.githubusercontent.com/leanprover/elan/464c9d28395000a2a0128e07081e4956d50eced2/elan-init.sh
           echo "a620ff1641616222c8d37c54845492004bb84d6877cdbc944dd65c1aa685bf53  /tmp/elan-init.sh" | sha256sum --check --strict
-          timeout 600s sh /tmp/elan-init.sh -y --default-toolchain none
+          sh /tmp/elan-init.sh -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-          timeout 900s "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.33.0
+          "$HOME/.elan/bin/elan" toolchain install leanprover/lean4:v4.33.0
 
-      - name: Restore Mathlib cache
-        working-directory: fixtures/lean-proof
-        run: timeout 900s lake exe cache get
+      - name: Assemble Hatcher source on target Mathlib pin
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --filter=blob:none --no-checkout https://github.com/frenzymath/Poincare-Conjecture.git /tmp/poincare-src
+          cd /tmp/poincare-src
+          git fetch --depth=1 origin bb91a091f0b968f8bbe8d861e025a88d82b161be
+          git checkout --detach FETCH_HEAD
+          cd formalized-sources/Hatcher
+          printf '%s\n' 'leanprover/lean4:v4.33.0' > lean-toolchain
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('lakefile.lean')
+          p.write_text(p.read_text().replace('520045ab14e26149ee970e2e617ca04b09bde5d6', 'db584cd6d46c92f209a44c0f1c829460d327499d'))
 
-      - name: Audit production loop
-        run: python3 scripts/pipeline_maturity_audit.py --strict
+          p = Path('HatcherLib/Ch1/BasicConstructions.lean')
+          s = p.read_text()
+          old = '(_root_.FundamentalGroup.mapOfEq (ContinuousMap.id Y) h).comp'
+          new = "(_root_.FundamentalGroup.mapOfEq (ContinuousMap.id Y)\n        (by simpa using h)).comp"
+          if s.count(old) != 2:
+              raise SystemExit(f'unexpected mapOfEq identity occurrence count: {s.count(old)}')
+          p.write_text(s.replace(old, new))
+
+          p = Path('HatcherLib/Ch1/VanKampen.lean')
+          s = p.read_text()
+          old = '''  rw [vanKampenMap, freeProductLift, freeProductInclusion,
+    Monoid.CoprodI.lift_of]
+  change Path.Homotopic.Quotient.map'''
+          new = '''  change
+    (freeProductLift (fun i => CoverFundamentalGroup cover i)
+      (fun i => FundamentalGroup.map (coverInclusion cover i)
+        ⟨x₀, cover.base_mem i⟩))
+      ((freeProductInclusion (fun i => CoverFundamentalGroup cover i) i)
+        (FundamentalGroup.fromPath (Path.Homotopic.Quotient.mk
+          (pathInSubtype (cover.base_mem i) p.path hp)))) = _
+  rw [← MonoidHom.comp_apply, freeProductLift_comp_inclusion]
+  change Path.Homotopic.Quotient.map'''
+          if s.count(old) != 1:
+              raise SystemExit(f'unexpected vanKampenMap_factor rewrite block count: {s.count(old)}')
+          p.write_text(s.replace(old, new))
+          PY
+          cat > HatcherLib/Ch1/PoincareVanKampenBridge.lean <<'LEAN'
+          import HatcherLib.Ch1.VanKampenGlobalSweep
+
+          namespace HatcherLib
+          noncomputable section
+          universe u
+          variable {X : Type u} [TopologicalSpace X] {x₀ : X}
+
+          theorem boolCover_tripleIntersectionsPathConnected
+              (cover : PathConnectedOpenCover x₀ Bool) :
+              VanKampenTripleIntersectionsPathConnected cover := by
+            intro i j k
+            cases i <;> cases j <;> cases k
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.pathConnected false
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.interPathConnected false true
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.interPathConnected false true
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.interPathConnected false true
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.interPathConnected true false
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.interPathConnected true false
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.interPathConnected true false
+            · simpa [Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using cover.pathConnected true
+
+          end
+          end HatcherLib
+          LEAN
+          rm -f lake-manifest.json
+          lake update mathlib
+          test "$(cat lean-toolchain)" = "leanprover/lean4:v4.33.0"
+          grep -q 'db584cd6d46c92f209a44c0f1c829460d327499d' lakefile.lean
+
+      - name: Restore target-pin Mathlib cache
+        working-directory: /tmp/poincare-src/formalized-sources/Hatcher
+        run: lake exe cache get
+
+      - name: Build Hatcher Van Kampen chain and two-set bridge
+        working-directory: /tmp/poincare-src/formalized-sources/Hatcher
+        run: lake build HatcherLib.Ch1.VanKampenGlobalSweep HatcherLib.Ch1.VanKampenAdaptedGrid HatcherLib.Ch1.PoincareVanKampenBridge
