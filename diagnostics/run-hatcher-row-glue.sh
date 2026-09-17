@@ -50,9 +50,9 @@ theorem sweepRow_top_equiv_next_bottom {x₀ : X} {ι : Type v}
   change VanKampenWordEquivalent cover
     (grid.horizontalFrontierWord htriple j j.succ (Or.inr rfl))
     (grid.horizontalFrontierWord htriple k k.castSucc (Or.inl rfl))
-  rw [← hjk]
-  exact grid.horizontalFrontierWord_changeRow htriple
+  have h := grid.horizontalFrontierWord_changeRow htriple
     j k j.succ (Or.inr rfl) (Or.inl hjk)
+  simpa [hjk] using h
 
 #print axioms sweepRow
 #print axioms sweepRow_top_equiv_next_bottom
