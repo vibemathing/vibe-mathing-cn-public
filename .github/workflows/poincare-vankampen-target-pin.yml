@@ -16,6 +16,6 @@ jobs:
       - name: Checkout harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Run patched full Van Kampen colimit replay
+      - name: Run patched full Van Kampen colimit replay v2
         shell: bash
-        run: bash diagnostics/run-vankampen-wip-target-pin.sh
+        run: bash diagnostics/run-vankampen-wip-target-pin-v2.sh
