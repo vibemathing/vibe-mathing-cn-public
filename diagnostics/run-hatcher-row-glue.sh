@@ -33,8 +33,8 @@ noncomputable def sweepRow {x₀ : X} {ι : Type v}
     have h := grid.rowSweep htriple j
     rw [VanKampenSweepCell.inputWord_eq_firstRight_bottoms,
       VanKampenSweepCell.outputWord_eq_tops_lastLeft] at h
-    simpa [horizontalFrontierWord, rowCells, rowCellsForIndices, sweepCell]
-      using h
+    simpa [horizontalFrontierWord, rowCells, rowCellsForIndices, sweepCell,
+      List.map_map, Function.comp_def] using h
 
 /-- Consecutive actual grid rows have equivalent words on their common
 horizontal frontier.  The only change is which incident row supplies the
@@ -47,9 +47,12 @@ theorem sweepRow_top_equiv_next_bottom {x₀ : X} {ι : Type v}
     VanKampenWordEquivalent cover
       (grid.sweepRow htriple j).top
       (grid.sweepRow htriple k).bottom := by
-  have h := grid.horizontalFrontierWord_changeRow htriple
+  change VanKampenWordEquivalent cover
+    (grid.horizontalFrontierWord htriple j j.succ (Or.inr rfl))
+    (grid.horizontalFrontierWord htriple k k.castSucc (Or.inl rfl))
+  rw [← hjk]
+  exact grid.horizontalFrontierWord_changeRow htriple
     j k j.succ (Or.inr rfl) (Or.inl hjk)
-  simpa [sweepRow] using h
 
 #print axioms sweepRow
 #print axioms sweepRow_top_equiv_next_bottom
