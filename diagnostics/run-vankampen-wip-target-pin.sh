@@ -35,11 +35,11 @@ s = p.read_text()
 # Lean 4.33 is stricter about dependent object transports in this WIP source.
 # Apply the same backward-defeq transparency relaxation used elsewhere in pinned
 # Mathlib, at file scope in this disposable overlay. Statements are unchanged.
-anchor = 'lemma comp_list_zero {objs : Fin 1 → C}'
+anchor = 'open CategoryTheory\nvariable {C : Type*} [Groupoid C]'
 if anchor not in s:
     raise SystemExit('ComposeMorphisms anchor not found')
 s = s.replace(anchor,
-    'set_option backward.isDefEq.respectTransparency false\n\n' + anchor, 1)
+    anchor + '\nset_option backward.isDefEq.respectTransparency false', 1)
 
 # Normalize category reassociation explicitly instead of relying on 4.32
 # definitional equality.
