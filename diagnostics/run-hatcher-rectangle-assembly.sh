@@ -50,7 +50,12 @@ theorem sweepRow_top_equiv_next_bottom {x₀ : X} {ι : Type v}
   intro i hi
   have hchange := grid.horizontalEdgeFactor_changeCell htriple
     i j k j.succ (Or.inr rfl) (Or.inl hjk) [] []
-  rw [hjk] at hchange
+  have hright :
+      grid.horizontalEdgeFactor htriple i k j.succ (Or.inl hjk) =
+        grid.horizontalEdgeFactor htriple i k k.castSucc (Or.inl rfl) := by
+    cases hjk
+    rfl
+  rw [hright] at hchange
   simpa [sweepCell, Function.comp_def] using hchange
 
 #print axioms sweepRow
