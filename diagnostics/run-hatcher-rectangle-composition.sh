@@ -37,11 +37,14 @@ theorem composable_of_ofFn_adjacent {x₀ : X} {ι : Type v}
           rw [List.ofFn_succ, List.ofFn_succ]
           refine ⟨?_, ?_⟩
           · exact hadj 0 (Fin.succ 0) (by rfl)
-          · apply ih
-            intro i j hij
-            apply hadj i.succ j.succ
-            simp only [Fin.val_succ]
-            omega
+          · have htail :
+                Composable (List.ofFn (fun i : Fin (n + 1) => f i.succ)) := by
+              apply ih
+              intro i j hij
+              apply hadj i.succ j.succ
+              simp only [Fin.val_succ]
+              omega
+            simpa [List.ofFn_succ] using htail
 
 end VanKampenSweepRow
 
