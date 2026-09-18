@@ -99,3 +99,36 @@ import Mathlib.AlgebraicTopology.FundamentalGroupoid.VanKampen.IsColimit
 #print axioms uniqueness_full
 LEAN
 "$HOME/.elan/bin/lake" env lean PoincareVanKampenAxiomAudit.lean
+
+# Downstream categorical bridge toward connected-sum factor simple-connectivity:
+# a thin colimit apex forces any diagram object with a faithful test-cocone leg
+# to be thin as well.
+cat > PoincareVanKampenFaithfulLeg.lean <<'LEAN'
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.VanKampen.IsColimit
+
+open CategoryTheory CategoryTheory.Limits
+
+universe u v
+
+variable {J : Type u} [Category.{v} J]
+variable (D : J ⥤ Grpd)
+
+/-- If a colimit apex is thin and the same diagram admits a cocone whose
+chosen leg is faithful, then the corresponding groupoid has subsingleton hom-sets. -/
+theorem subsingleton_hom_of_isColimit_faithful_leg
+    (c : Cocone D) (hc : IsColimit c)
+    (hthin : ∀ x y : c.pt, Subsingleton (x ⟶ y))
+    (s : Cocone D) (j : J) [(s.ι.app j).Faithful] :
+    ∀ x y : D.obj j, Subsingleton (x ⟶ y) := by
+  intro x y
+  constructor
+  intro f g
+  apply (s.ι.app j).map_injective
+  have hfg : (c.ι.app j).map f = (c.ι.app j).map g :=
+    @Subsingleton.elim _ (hthin _ _) _ _
+  have hmapped := congrArg (hc.desc s).map hfg
+  simpa only [← hc.fac s j, Functor.comp_map] using hmapped
+
+#print axioms subsingleton_hom_of_isColimit_faithful_leg
+LEAN
+"$HOME/.elan/bin/lake" env lean PoincareVanKampenFaithfulLeg.lean
