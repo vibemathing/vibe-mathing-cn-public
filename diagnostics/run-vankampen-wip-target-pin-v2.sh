@@ -127,7 +127,15 @@ theorem subsingleton_hom_of_isColimit_faithful_leg
   have hfg : (c.ι.app j).map f = (c.ι.app j).map g :=
     @Subsingleton.elim _ (hthin _ _) _ _
   have hmapped := congrArg (hc.desc s).map hfg
-  simpa only [← hc.fac s j, Functor.comp_map] using hmapped
+  have hfac_f := congrArg (fun F : D.obj j ⥤ s.pt => F.map f) (hc.fac s j)
+  have hfac_g := congrArg (fun F : D.obj j ⥤ s.pt => F.map g) (hc.fac s j)
+  calc
+    (s.ι.app j).map f =
+        (hc.desc s).map ((c.ι.app j).map f) := by
+      simpa only [Functor.comp_map] using hfac_f.symm
+    _ = (hc.desc s).map ((c.ι.app j).map g) := hmapped
+    _ = (s.ι.app j).map g := by
+      simpa only [Functor.comp_map] using hfac_g
 
 #print axioms subsingleton_hom_of_isColimit_faithful_leg
 LEAN
