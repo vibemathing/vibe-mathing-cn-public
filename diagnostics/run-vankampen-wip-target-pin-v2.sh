@@ -70,11 +70,11 @@ p.write_text(s)
 # diagnostic from Lean.  Apply the same elaboration-only compatibility mode.
 p = Path('Mathlib/AlgebraicTopology/FundamentalGroupoid/VanKampen/ColimitProof.lean')
 s = p.read_text()
-anchor = 'open scoped unitInterval\\n\\nnoncomputable section'
+anchor = 'open scoped unitInterval\n\nnoncomputable section'
 if anchor not in s:
     raise SystemExit('ColimitProof transparency anchor not found')
 s = s.replace(anchor,
-    'open scoped unitInterval\\n\\nset_option backward.isDefEq.respectTransparency false\\n\\nnoncomputable section', 1)
+    'open scoped unitInterval\n\nset_option backward.isDefEq.respectTransparency false\n\nnoncomputable section', 1)
 p.write_text(s)
 '''
 marker = "PY\n\nlake exe cache get"
