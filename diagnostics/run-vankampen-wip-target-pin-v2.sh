@@ -166,7 +166,45 @@ instance basedTransportFunctor_faithful (c : C) (p : ∀ x : C, c ⟶ x) :
     (basedTransportFunctor c p).Faithful where
   map_injective := basedTransportFunctor_map_injective c p
 
+universe u₂
+
+variable {X : Type u₂} [TopologicalSpace X]
+
+/-- The intersection-closed family of all opens subordinate to one side of a
+two-open cover. -/
+def subordinateTwoCover (U V : Opens X) : Set (Opens X) :=
+  {O | O ≤ U ∨ O ≤ V}
+
+@[simp]
+theorem mem_subordinateTwoCover {U V O : Opens X} :
+    O ∈ subordinateTwoCover U V ↔ O ≤ U ∨ O ≤ V :=
+  Iff.rfl
+
+/-- If U and V cover X, the subordinate family covers X as well. -/
+theorem subordinateTwoCover_covers (U V : Opens X) (hUV : U ⊔ V = ⊤) :
+    ∀ x : X, ∃ O : Opens X, O ∈ subordinateTwoCover U V ∧ x ∈ O := by
+  intro x
+  have hx : x ∈ U ⊔ V := by
+    rw [hUV]
+    simp
+  rcases (Opens.mem_sup.mp hx) with hxU | hxV
+  · exact ⟨U, Or.inl le_rfl, hxU⟩
+  · exact ⟨V, Or.inr le_rfl, hxV⟩
+
+/-- The subordinate family is closed under nonempty finite intersections. -/
+theorem subordinateTwoCover_finiteIntersections (U V : Opens X) :
+    ∀ s : Finset (Opens X), s.Nonempty →
+      (∀ O ∈ s, O ∈ subordinateTwoCover U V) →
+      s.inf (fun O : Opens X => O) ∈ subordinateTwoCover U V := by
+  intro s hs hall
+  rcases hs with ⟨O, hO⟩
+  rcases hall O hO with hOU | hOV
+  · exact Or.inl ((Finset.inf_le hO).trans hOU)
+  · exact Or.inr ((Finset.inf_le hO).trans hOV)
+
 #print axioms subsingleton_hom_of_isColimit_faithful_leg
 #print axioms basedTransportFunctor_map_injective
+#print axioms subordinateTwoCover_covers
+#print axioms subordinateTwoCover_finiteIntersections
 LEAN
 "$HOME/.elan/bin/lake" env lean PoincareVanKampenFaithfulLeg.lean
