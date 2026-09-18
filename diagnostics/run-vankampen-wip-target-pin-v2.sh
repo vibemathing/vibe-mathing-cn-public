@@ -63,6 +63,19 @@ if s.count(old_middle) != 1:
     raise SystemExit(f'unexpected CompositionFinal h_middle patch count: {s.count(old_middle)}')
 s = s.replace(old_middle, '      rw [h_comp]', 1)
 p.write_text(s)
+
+# ColimitProof is the next Lean-4.33 compatibility frontier exposed after
+# UniquenessProofs compiled.  Its remaining residues are eqToHom/Functor.map
+# definitional-equality failures, including an explicit implicit-transparency
+# diagnostic from Lean.  Apply the same elaboration-only compatibility mode.
+p = Path('Mathlib/AlgebraicTopology/FundamentalGroupoid/VanKampen/ColimitProof.lean')
+s = p.read_text()
+anchor = 'open scoped unitInterval\\n\\nnoncomputable section'
+if anchor not in s:
+    raise SystemExit('ColimitProof transparency anchor not found')
+s = s.replace(anchor,
+    'open scoped unitInterval\\n\\nset_option backward.isDefEq.respectTransparency false\\n\\nnoncomputable section', 1)
+p.write_text(s)
 '''
 marker = "PY\n\nlake exe cache get"
 if src.count(marker) != 1:
