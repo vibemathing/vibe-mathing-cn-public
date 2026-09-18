@@ -86,3 +86,16 @@ Path('/tmp/run-vankampen-wip-target-pin-v2-generated.sh').write_text(src)
 PY
 
 bash /tmp/run-vankampen-wip-target-pin-v2-generated.sh
+
+# If the full exact-pin build succeeds, audit the final colimit declarations at
+# theorem level.  This is deliberately after the build so failed elaboration
+# cannot produce misleading downstream axiom output.
+cd /tmp/mathlib-target
+cat > PoincareVanKampenAxiomAudit.lean <<'LEAN'
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.VanKampen.IsColimit
+
+#print axioms my_canonicalCocone_isColimit
+#print axioms van_kampen_groupoid_main
+#print axioms uniqueness_full
+LEAN
+lake env lean PoincareVanKampenAxiomAudit.lean
