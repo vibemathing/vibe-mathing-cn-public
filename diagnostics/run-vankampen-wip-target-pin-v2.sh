@@ -137,6 +137,36 @@ theorem subsingleton_hom_of_isColimit_faithful_leg
     _ = (s.ι.app j).map g := by
       simpa only [Functor.comp_map] using hfac_g
 
+universe u₁ v₁
+
+variable {C : Type u₁} [Groupoid.{v₁} C]
+
+/-- A choice of arrows from a base object to every object gives a one-object
+transport functor into the base endomorphism group. -/
+def basedTransportFunctor (c : C) (p : ∀ x : C, c ⟶ x) :
+    C ⥤ SingleObj (End c) where
+  obj _ := SingleObj.star _
+  map {x y} f := p x ≫ f ≫ inv (p y)
+  map_id x := by
+    simp
+  map_comp f g := by
+    simp only [SingleObj.comp_as_mul, End.mul_def, Category.assoc,
+      IsIso.inv_hom_id_assoc]
+
+/-- The based transport functor is faithful: conjugating a morphism by chosen
+base arrows cannot identify two distinct morphisms. -/
+theorem basedTransportFunctor_map_injective (c : C) (p : ∀ x : C, c ⟶ x)
+    {x y : C} :
+    Function.Injective (fun f : x ⟶ y => (basedTransportFunctor c p).map f) := by
+  intro f g h
+  rw [← cancel_epi (p x), ← cancel_mono (inv (p y))]
+  simpa [basedTransportFunctor, Category.assoc] using h
+
+instance basedTransportFunctor_faithful (c : C) (p : ∀ x : C, c ⟶ x) :
+    (basedTransportFunctor c p).Faithful where
+  map_injective := basedTransportFunctor_map_injective c p
+
 #print axioms subsingleton_hom_of_isColimit_faithful_leg
+#print axioms basedTransportFunctor_map_injective
 LEAN
 "$HOME/.elan/bin/lake" env lean PoincareVanKampenFaithfulLeg.lean
