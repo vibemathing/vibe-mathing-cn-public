@@ -98,4 +98,4 @@ import Mathlib.AlgebraicTopology.FundamentalGroupoid.VanKampen.IsColimit
 #print axioms van_kampen_groupoid_main
 #print axioms uniqueness_full
 LEAN
-lake env lean PoincareVanKampenAxiomAudit.lean
+"$HOME/.elan/bin/lake" env lean PoincareVanKampenAxiomAudit.lean
