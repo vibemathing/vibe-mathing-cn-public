@@ -14,8 +14,8 @@ noncomputable def basedTransportFunctor {C : Type u} [Groupoid.{v} C]
   obj _ := SingleObj.star _
   map {x y} f := (show End c from p x ≫ f ≫ inv (p y))
   map_id x := by
-    change (p x ≫ 𝟙 x ≫ inv (p x) : End c) = 1
-    simp
+    dsimp
+    rw [Category.comp_id, IsIso.hom_inv_id, ← End.one_def, SingleObj.id_as_one]
   map_comp f g := by
     rw [SingleObj.comp_as_mul, End.mul_def]
     simp only [Category.assoc, IsIso.inv_hom_id_assoc]
@@ -73,57 +73,8 @@ theorem monoidHom_toFunctor_faithful_of_injective
     intro X Y a b h
     exact hf h
 
-/-- Bundle a group as a one-object groupoid. -/
-abbrev singleObjGrpd (K : Type v) [Group K] : Grpd.{v, u} :=
-  Grpd.of (SingleObj K)
-
-/-- The group amalgamated product supplies a cocone on the one-object
-groupoid span. -/
-def pushoutISingleObjCocone
-    {H : Type u} {G : Bool → Type u}
-    [Group H] [∀ i, Group (G i)]
-    (φ : ∀ i, H →* G i) :
-    PushoutCocone
-      (show singleObjGrpd H ⟶ singleObjGrpd (G false) from (φ false).toFunctor)
-      (show singleObjGrpd H ⟶ singleObjGrpd (G true) from (φ true).toFunctor) :=
-  PushoutCocone.mk
-    (show singleObjGrpd (G false) ⟶
-        singleObjGrpd (Monoid.PushoutI φ) from
-      (Monoid.PushoutI.of (φ := φ) false).toFunctor)
-    (show singleObjGrpd (G true) ⟶
-        singleObjGrpd (Monoid.PushoutI φ) from
-      (Monoid.PushoutI.of (φ := φ) true).toFunctor)
-    (by
-      rw [Grpd.comp_eq_comp, Grpd.comp_eq_comp]
-      rw [← MonoidHom.comp_toFunctor, ← MonoidHom.comp_toFunctor]
-      congr 1
-      rw [Monoid.PushoutI.of_comp_eq_base, Monoid.PushoutI.of_comp_eq_base])
-
-/-- If the amalgamating group is subsingleton, the left pushout cocone leg is
-faithful by the normal-form theorem. -/
-theorem pushoutISingleObjCocone_inl_faithful
-    {H : Type u} {G : Bool → Type u}
-    [Group H] [∀ i, Group (G i)]
-    (φ : ∀ i, H →* G i) [Subsingleton H] :
-    (pushoutISingleObjCocone φ).inl.Faithful := by
-  change ((Monoid.PushoutI.of (φ := φ) false).toFunctor).Faithful
-  exact monoidHom_toFunctor_faithful_of_injective _
-    (pushoutI_of_injective_of_subsingleton φ false)
-
-/-- If the amalgamating group is subsingleton, the right pushout cocone leg is
-faithful by the normal-form theorem. -/
-theorem pushoutISingleObjCocone_inr_faithful
-    {H : Type u} {G : Bool → Type u}
-    [Group H] [∀ i, Group (G i)]
-    (φ : ∀ i, H →* G i) [Subsingleton H] :
-    (pushoutISingleObjCocone φ).inr.Faithful := by
-  change ((Monoid.PushoutI.of (φ := φ) true).toFunctor).Faithful
-  exact monoidHom_toFunctor_faithful_of_injective _
-    (pushoutI_of_injective_of_subsingleton φ true)
-
 #print axioms basedTransportFunctor_map_injective
+#print axioms basedTransportFunctor_faithful
 #print axioms pushoutI_of_injective_of_subsingleton
 #print axioms subsingleton_factor_of_pushoutI
 #print axioms monoidHom_toFunctor_faithful_of_injective
-#print axioms pushoutISingleObjCocone_inl_faithful
-#print axioms pushoutISingleObjCocone_inr_faithful
