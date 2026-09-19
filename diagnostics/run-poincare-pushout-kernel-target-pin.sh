@@ -28,6 +28,6 @@ lake exe cache get
 cp "$HARNESS_ROOT/diagnostics/PoincareVanKampenPushoutKernel.lean" .
 cp "$HARNESS_ROOT/diagnostics/PoincareULiftPushoutProbe.lean" .
 cp "$HARNESS_ROOT/diagnostics/PoincareConstantHomGroupoidProbe.lean" .
+lake env lean -o PoincareVanKampenPushoutKernel.olean PoincareVanKampenPushoutKernel.lean
 lake env lean PoincareConstantHomGroupoidProbe.lean
 lake env lean PoincareULiftPushoutProbe.lean
-lake env lean PoincareVanKampenPushoutKernel.lean
