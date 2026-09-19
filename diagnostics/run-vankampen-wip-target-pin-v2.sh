@@ -126,20 +126,20 @@ theorem subsingleton_hom_of_isColimit_faithful_leg
   intro x y
   constructor
   intro f g
-  apply (s.ι.app j).map_injective
-  have hfac := hc.fac s j
-  rw [Grpd.comp_eq_comp] at hfac
-  have hfac_f := congrArg (fun F => F.map f) hfac
-  have hfac_g := congrArg (fun F => F.map g) hfac
+  let F := c.ι.app j ⋙ hc.desc s
+  have hF : F = s.ι.app j := by
+    dsimp [F]
+    have hfac := hc.fac s j
+    rw [Grpd.comp_eq_comp] at hfac
+    exact hfac
+  haveI : F.Faithful := by
+    rw [hF]
+    infer_instance
   have hfg :
       (c.ι.app j).map f = (c.ι.app j).map g :=
     @Subsingleton.elim _ (hthin _ _) _ _
-  calc
-    (s.ι.app j).map f = (hc.desc s).map ((c.ι.app j).map f) := by
-      exact hfac_f.symm
-    _ = (hc.desc s).map ((c.ι.app j).map g) := congrArg (hc.desc s).map hfg
-    _ = (s.ι.app j).map g := by
-      exact hfac_g
+  apply F.map_injective
+  exact congrArg (hc.desc s).map hfg
 
 universe u₂
 
