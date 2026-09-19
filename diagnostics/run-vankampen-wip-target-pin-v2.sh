@@ -201,15 +201,17 @@ universe u v
 
 /-- A path-connected groupoid can be transported to the one-object groupoid at
 a chosen base object by conjugating with chosen connecting arrows. -/
-def basedTransportFunctor {C : Type u} [Groupoid.{v} C]
+noncomputable def basedTransportFunctor {C : Type u} [Groupoid.{v} C]
     (c : C) (p : ∀ x : C, c ⟶ x) :
     C ⥤ SingleObj (End c) where
   obj _ := SingleObj.star _
   map {x y} f := (show End c from p x ≫ f ≫ inv (p y))
   map_id x := by
+    rw [SingleObj.id_as_one, End.one_def]
     simp
   map_comp f g := by
-    simp [Category.assoc]
+    rw [SingleObj.comp_as_mul, End.mul_def]
+    simp only [Category.assoc, IsIso.inv_hom_id_assoc]
 
 /-- Conjugation by chosen connecting arrows is injective on every hom-set. -/
 theorem basedTransportFunctor_map_injective
@@ -218,8 +220,8 @@ theorem basedTransportFunctor_map_injective
     Function.Injective (fun f : x ⟶ y => (basedTransportFunctor c p).map f) := by
   intro f g h
   change p x ≫ f ≫ inv (p y) = p x ≫ g ≫ inv (p y) at h
-  simpa using
-    (cancel_epi (p x)).1 ((cancel_mono (inv (p y))).1 h)
+  simp only [← Category.assoc] at h
+  exact (cancel_epi (p x)).1 ((cancel_mono (inv (p y))).1 h)
 
 instance basedTransportFunctor_faithful
     {C : Type u} [Groupoid.{v} C]
