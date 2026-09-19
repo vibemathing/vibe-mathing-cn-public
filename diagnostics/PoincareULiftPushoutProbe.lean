@@ -54,7 +54,11 @@ def liftedPushoutICocone
       · intro X Y f
         change Monoid.PushoutI.of false (φ false f) =
           Monoid.PushoutI.of true (φ true f)
-        simpa using Monoid.PushoutI.of_eq_of φ f)
+        have hfalse :=
+          DFunLike.congr_fun (Monoid.PushoutI.of_comp_eq_base (φ := φ) false) f
+        have htrue :=
+          DFunLike.congr_fun (Monoid.PushoutI.of_comp_eq_base (φ := φ) true) f
+        exact hfalse.trans htrue.symm)
 
 #print axioms liftedMonoidHomFunctor_faithful_of_injective
 #print axioms liftedPushoutICocone
