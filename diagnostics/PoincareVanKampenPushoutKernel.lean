@@ -1,5 +1,6 @@
 import Mathlib.GroupTheory.PushoutI
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
 
 open CategoryTheory
 
@@ -73,8 +74,8 @@ theorem monoidHom_toFunctor_faithful_of_injective
     exact hf h
 
 /-- Bundle a group as a one-object groupoid. -/
-abbrev singleObjGrpd (K : Type u) [Group K] : Grpd.{u, 0} :=
-  Grpd.of (SingleObj K)
+abbrev singleObjGrpd.{v, u} (K : Type v) [Group K] : Grpd.{v, u} :=
+  Grpd.of.{v, u} (SingleObj K)
 
 /-- The group amalgamated product supplies a cocone on the one-object
 groupoid span. -/
