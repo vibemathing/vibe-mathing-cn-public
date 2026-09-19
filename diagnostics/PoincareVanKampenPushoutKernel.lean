@@ -2,7 +2,7 @@ import Mathlib.GroupTheory.PushoutI
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
 
-open CategoryTheory
+open CategoryTheory CategoryTheory.Limits
 
 universe u v
 
@@ -14,7 +14,7 @@ noncomputable def basedTransportFunctor {C : Type u} [Groupoid.{v} C]
   obj _ := SingleObj.star _
   map {x y} f := (show End c from p x ≫ f ≫ inv (p y))
   map_id x := by
-    rw [SingleObj.id_as_one, End.one_def]
+    change (p x ≫ 𝟙 x ≫ inv (p x) : End c) = 1
     simp
   map_comp f g := by
     rw [SingleObj.comp_as_mul, End.mul_def]
@@ -74,8 +74,8 @@ theorem monoidHom_toFunctor_faithful_of_injective
     exact hf h
 
 /-- Bundle a group as a one-object groupoid. -/
-abbrev singleObjGrpd.{v, u} (K : Type v) [Group K] : Grpd.{v, u} :=
-  Grpd.of.{v, u} (SingleObj K)
+abbrev singleObjGrpd (K : Type v) [Group K] : Grpd.{v, u} :=
+  Grpd.of (SingleObj K)
 
 /-- The group amalgamated product supplies a cocone on the one-object
 groupoid span. -/
