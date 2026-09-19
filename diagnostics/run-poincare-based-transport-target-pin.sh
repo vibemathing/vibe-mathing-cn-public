@@ -51,9 +51,13 @@ def basedTransportFunctor (c : C) (p : ∀ x : C, c ⟶ x) :
   obj _ := SingleObj.star _
   map f := basedTransportMap c p f
   map_id x := by
+    change basedTransportMap c p (𝟙 x) = (1 : End c)
     simp [basedTransportMap]
   map_comp f g := by
-    simp [basedTransportMap, SingleObj.comp_as_mul, End.mul_def, Category.assoc]
+    change basedTransportMap c p (f ≫ g) =
+      basedTransportMap c p g * basedTransportMap c p f
+    rw [End.mul_def]
+    simp [basedTransportMap, Category.assoc]
 
 /-- Conjugating by chosen base arrows is injective on every hom-set. -/
 theorem basedTransportMap_injective
@@ -62,7 +66,7 @@ theorem basedTransportMap_injective
   intro f g h
   dsimp only [basedTransportMap] at h
   rw [← cancel_epi (p x), ← cancel_mono (Groupoid.inv (p y))]
-  exact h
+  simpa only [Category.assoc] using h
 
 instance basedTransportFunctor_faithful
     (c : C) (p : ∀ x : C, c ⟶ x) :
