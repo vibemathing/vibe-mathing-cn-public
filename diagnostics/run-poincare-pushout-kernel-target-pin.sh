@@ -26,4 +26,6 @@ test "$(cat lean-toolchain)" = "$LEAN_TOOLCHAIN"
 lake exe cache get
 
 cp "$HARNESS_ROOT/diagnostics/PoincareVanKampenPushoutKernel.lean" .
+cp "$HARNESS_ROOT/diagnostics/PoincareTwoOpenCoverKernel.lean" .
 lake env lean PoincareVanKampenPushoutKernel.lean
+lake env lean PoincareTwoOpenCoverKernel.lean
