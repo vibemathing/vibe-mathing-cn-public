@@ -6,37 +6,44 @@ open CategoryTheory CategoryTheory.Limits
 
 universe u v
 
-/-- A path-connected groupoid can be transported to the one-object groupoid at
-a chosen base object by conjugating with chosen connecting arrows. -/
-noncomputable def basedTransportFunctor {C : Type u} [Groupoid.{v} C]
+/-- The conjugation map underlying based transport, typed in the source
+category before it is used as a morphism of a single-object category. -/
+def basedTransportMap {C : Type u} [Groupoid.{v} C]
+    (c : C) (p : ∀ x : C, c ⟶ x)
+    {x y : C} (f : x ⟶ y) : End c :=
+  p x ≫ f ≫ Groupoid.inv (p y)
+
+/-- Transport a connected groupoid to the vertex group at a chosen base object,
+using one chosen arrow from the base to every object. -/
+def basedTransportFunctor {C : Type u} [Groupoid.{v} C]
     (c : C) (p : ∀ x : C, c ⟶ x) :
     C ⥤ SingleObj (End c) where
   obj _ := SingleObj.star _
-  map {x y} f := (show End c from p x ≫ f ≫ inv (p y))
+  map f := basedTransportMap c p f
   map_id x := by
-    dsimp
-    rw [Category.comp_id, IsIso.hom_inv_id, ← End.one_def, SingleObj.id_as_one]
+    change basedTransportMap c p (𝟙 x) = (1 : End c)
+    simp [basedTransportMap]
   map_comp f g := by
-    rw [SingleObj.comp_as_mul, End.mul_def]
-    simp only [Category.assoc, IsIso.inv_hom_id_assoc]
+    change basedTransportMap c p (f ≫ g) =
+      basedTransportMap c p g * basedTransportMap c p f
+    rw [End.mul_def]
+    simp [basedTransportMap, Category.assoc]
 
-/-- Conjugation by chosen connecting arrows is injective on every hom-set. -/
-theorem basedTransportFunctor_map_injective
+/-- Conjugating by chosen base arrows is injective on every hom-set. -/
+theorem basedTransportMap_injective
     {C : Type u} [Groupoid.{v} C]
     (c : C) (p : ∀ x : C, c ⟶ x) {x y : C} :
-    Function.Injective (fun f : x ⟶ y => (basedTransportFunctor c p).map f) := by
+    Function.Injective (basedTransportMap c p : (x ⟶ y) → End c) := by
   intro f g h
-  change p x ≫ f ≫ inv (p y) = p x ≫ g ≫ inv (p y) at h
-  simp only [← Category.assoc] at h
-  exact (cancel_epi (p x)).1 ((cancel_mono (inv (p y))).1 h)
+  dsimp only [basedTransportMap] at h
+  rw [← cancel_epi (p x), ← cancel_mono (Groupoid.inv (p y))]
+  simpa only [Category.assoc] using h
 
 instance basedTransportFunctor_faithful
     {C : Type u} [Groupoid.{v} C]
     (c : C) (p : ∀ x : C, c ⟶ x) :
     (basedTransportFunctor c p).Faithful where
-  map_injective := by
-    intro x y f g h
-    exact basedTransportFunctor_map_injective c p h
+  map_injective {_ _} f g h := basedTransportMap_injective c p h
 
 universe w
 
@@ -73,7 +80,7 @@ theorem monoidHom_toFunctor_faithful_of_injective
     intro X Y a b h
     exact hf h
 
-#print axioms basedTransportFunctor_map_injective
+#print axioms basedTransportMap_injective
 #print axioms basedTransportFunctor_faithful
 #print axioms pushoutI_of_injective_of_subsingleton
 #print axioms subsingleton_factor_of_pushoutI
