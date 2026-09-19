@@ -8,6 +8,7 @@ on:
       - diagnostics/PoincareVanKampenPushoutKernel.lean
       - diagnostics/PoincareTwoOpenCoverKernel.lean
       - diagnostics/PoincareULiftPushoutProbe.lean
+      - diagnostics/PoincareConstantHomGroupoidProbe.lean
       - diagnostics/run-poincare-pushout-kernel-target-pin.sh
       - .github/workflows/poincare-pushout-kernel-target-pin.yml
 
