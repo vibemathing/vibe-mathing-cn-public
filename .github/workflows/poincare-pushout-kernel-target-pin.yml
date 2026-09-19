@@ -6,6 +6,7 @@ on:
       - tmp-poincare-vankampen-target-pin-20260917
     paths:
       - diagnostics/PoincareVanKampenPushoutKernel.lean
+      - diagnostics/PoincareTwoOpenCoverKernel.lean
       - diagnostics/run-poincare-pushout-kernel-target-pin.sh
       - .github/workflows/poincare-pushout-kernel-target-pin.yml
 
