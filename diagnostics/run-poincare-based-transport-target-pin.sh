@@ -103,8 +103,9 @@ theorem basedTransportMap_map_eq_one_of_subsingleton
   have hC := basedTransportMap_eq_one_of_subsingleton c pC hthin f
   have hF := congrArg F.map hC
   simp only [basedTransportMap] at hF ⊢
+  rw [Functor.map_comp, Functor.map_comp, Functor.map_inv, Functor.map_id] at hF
   rw [hcompat x, hcompat y]
-  simpa only [Functor.map_comp, Functor.map_id, Functor.map_inv] using hF
+  exact hF
 
 #print axioms basedTransportMap_eq_one_of_subsingleton
 #print axioms basedTransportMap_map_eq_one_of_subsingleton
