@@ -38,33 +38,38 @@ universe u v
 
 variable {C : Type u} [Groupoid.{v} C]
 
+/-- The conjugation map underlying based transport, typed in the source
+category before it is used as a morphism of a single-object category. -/
+def basedTransportMap (c : C) (p : ∀ x : C, c ⟶ x)
+    {x y : C} (f : x ⟶ y) : End c :=
+  p x ≫ f ≫ Groupoid.inv (p y)
+
 /-- Transport a connected groupoid to the vertex group at a chosen base object,
 using one chosen arrow from the base to every object. -/
 def basedTransportFunctor (c : C) (p : ∀ x : C, c ⟶ x) :
     C ⥤ SingleObj (End c) where
   obj _ := SingleObj.star _
-  map {x y} f := p x ≫ f ≫ Groupoid.inv (p y)
+  map f := basedTransportMap c p f
   map_id x := by
-    simp
+    simp [basedTransportMap]
   map_comp f g := by
-    simp [SingleObj.comp_as_mul, End.mul_def, Category.assoc]
+    simp [basedTransportMap, SingleObj.comp_as_mul, End.mul_def, Category.assoc]
 
 /-- Conjugating by chosen base arrows is injective on every hom-set. -/
-theorem basedTransportFunctor_map_injective
+theorem basedTransportMap_injective
     (c : C) (p : ∀ x : C, c ⟶ x) {x y : C} :
-    Function.Injective (fun f : x ⟶ y => (basedTransportFunctor c p).map f) := by
+    Function.Injective (basedTransportMap c p : (x ⟶ y) → End c) := by
   intro f g h
-  change p x ≫ f ≫ Groupoid.inv (p y) =
-      p x ≫ g ≫ Groupoid.inv (p y) at h
+  dsimp only [basedTransportMap] at h
   rw [← cancel_epi (p x), ← cancel_mono (Groupoid.inv (p y))]
   exact h
 
 instance basedTransportFunctor_faithful
     (c : C) (p : ∀ x : C, c ⟶ x) :
     (basedTransportFunctor c p).Faithful where
-  map_injective {_ _} := basedTransportFunctor_map_injective c p
+  map_injective {_ _} f g h := basedTransportMap_injective c p h
 
-#print axioms basedTransportFunctor_map_injective
+#print axioms basedTransportMap_injective
 LEAN
 
 lake env lean PoincareBasedTransport.lean
