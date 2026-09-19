@@ -109,6 +109,8 @@ import Mathlib.AlgebraicTopology.FundamentalGroupoid.VanKampen.IsColimit
 open CategoryTheory CategoryTheory.Limits
 open TopologicalSpace
 
+set_option backward.isDefEq.respectTransparency false
+
 universe u v
 
 variable {J : Type u} [Category.{v} J]
