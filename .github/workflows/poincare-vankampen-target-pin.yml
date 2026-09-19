@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - tmp-poincare-vankampen-target-pin-20260917
+    paths:
+      - diagnostics/run-vankampen-wip-target-pin.sh
+      - diagnostics/run-vankampen-wip-target-pin-v2.sh
+      - .github/workflows/poincare-vankampen-target-pin.yml
 
 permissions:
   contents: read
