@@ -1,0 +1,21 @@
+name: Poincare based transport target-pin probe
+
+on:
+  push:
+    branches:
+      - tmp-poincare-based-transport-target-pin-20260919
+
+permissions:
+  contents: read
+
+jobs:
+  based-transport-target-pin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout harness
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Check based groupoid transport on exact target pin
+        shell: bash
+        run: bash diagnostics/run-poincare-based-transport-target-pin.sh
