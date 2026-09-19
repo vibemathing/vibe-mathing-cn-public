@@ -107,6 +107,7 @@ cat > PoincareVanKampenFaithfulLeg.lean <<'LEAN'
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.VanKampen.IsColimit
 
 open CategoryTheory CategoryTheory.Limits
+open TopologicalSpace
 
 universe u v
 
@@ -114,7 +115,7 @@ variable {J : Type u} [Category.{v} J]
 variable (D : J ⥤ Grpd)
 
 /-- If a colimit apex is thin and the same diagram admits a cocone whose
-chosen leg is faithful, then the corresponding groupoid has subsingleton hom-sets. -/
+chosen leg is faithful, then the corresponding diagram object is thin. -/
 theorem subsingleton_hom_of_isColimit_faithful_leg
     (c : Cocone D) (hc : IsColimit c)
     (hthin : ∀ x y : c.pt, Subsingleton (x ⟶ y))
@@ -124,86 +125,21 @@ theorem subsingleton_hom_of_isColimit_faithful_leg
   constructor
   intro f g
   apply (s.ι.app j).map_injective
-  have hfg : (c.ι.app j).map f = (c.ι.app j).map g :=
+  rw [← hc.fac s j]
+  simp only [Functor.comp_map]
+  have hfg :
+      (c.ι.app j).map f = (c.ι.app j).map g :=
     @Subsingleton.elim _ (hthin _ _) _ _
-  have hmapped := congrArg (hc.desc s).map hfg
-  have hfac_f := congrArg (fun F : D.obj j ⥤ s.pt => F.map f) (hc.fac s j)
-  have hfac_g := congrArg (fun F : D.obj j ⥤ s.pt => F.map g) (hc.fac s j)
-  calc
-    (s.ι.app j).map f =
-        (hc.desc s).map ((c.ι.app j).map f) := by
-      simpa only [Functor.comp_map] using hfac_f.symm
-    _ = (hc.desc s).map ((c.ι.app j).map g) := hmapped
-    _ = (s.ι.app j).map g := by
-      simpa only [Functor.comp_map] using hfac_g
-
-universe u₁ v₁
-
-variable {C : Type u₁} [Groupoid.{v₁} C]
-
-/-- A choice of arrows from a base object to every object gives a one-object
-transport functor into the base endomorphism group. -/
-def basedTransportFunctor (c : C) (p : ∀ x : C, c ⟶ x) :
-    C ⥤ SingleObj (End c) where
-  obj _ := SingleObj.star _
-  map {x y} f := p x ≫ f ≫ inv (p y)
-  map_id x := by
-    simp
-  map_comp f g := by
-    simp only [SingleObj.comp_as_mul, End.mul_def, Category.assoc,
-      IsIso.inv_hom_id_assoc]
-
-/-- The based transport functor is faithful: conjugating a morphism by chosen
-base arrows cannot identify two distinct morphisms. -/
-theorem basedTransportFunctor_map_injective (c : C) (p : ∀ x : C, c ⟶ x)
-    {x y : C} :
-    Function.Injective (fun f : x ⟶ y => (basedTransportFunctor c p).map f) := by
-  intro f g h
-  rw [← cancel_epi (p x), ← cancel_mono (inv (p y))]
-  simpa [basedTransportFunctor, Category.assoc] using h
-
-instance basedTransportFunctor_faithful (c : C) (p : ∀ x : C, c ⟶ x) :
-    (basedTransportFunctor c p).Faithful where
-  map_injective := basedTransportFunctor_map_injective c p
+  exact congrArg
+    (fun k : (c.ι.app j).obj x ⟶ (c.ι.app j).obj y => (hc.desc s).map k)
+    hfg
 
 universe u₂
 
 variable {X : Type u₂} [TopologicalSpace X]
 
-/-- The intersection-closed family of all opens subordinate to one side of a
-two-open cover. -/
-def subordinateTwoCover (U V : Opens X) : Set (Opens X) :=
-  {O | O ≤ U ∨ O ≤ V}
-
-@[simp]
-theorem mem_subordinateTwoCover {U V O : Opens X} :
-    O ∈ subordinateTwoCover U V ↔ O ≤ U ∨ O ≤ V :=
-  Iff.rfl
-
-/-- If U and V cover X, the subordinate family covers X as well. -/
-theorem subordinateTwoCover_covers (U V : Opens X) (hUV : U ⊔ V = ⊤) :
-    ∀ x : X, ∃ O : Opens X, O ∈ subordinateTwoCover U V ∧ x ∈ O := by
-  intro x
-  have hx : x ∈ U ⊔ V := by
-    rw [hUV]
-    simp
-  rcases (Opens.mem_sup.mp hx) with hxU | hxV
-  · exact ⟨U, Or.inl le_rfl, hxU⟩
-  · exact ⟨V, Or.inr le_rfl, hxV⟩
-
-/-- The subordinate family is closed under nonempty finite intersections. -/
-theorem subordinateTwoCover_finiteIntersections (U V : Opens X) :
-    ∀ s : Finset (Opens X), s.Nonempty →
-      (∀ O ∈ s, O ∈ subordinateTwoCover U V) →
-      s.inf (fun O : Opens X => O) ∈ subordinateTwoCover U V := by
-  intro s hs hall
-  rcases hs with ⟨O, hO⟩
-  rcases hall O hO with hOU | hOV
-  · exact Or.inl ((Finset.inf_le hO).trans hOU)
-  · exact Or.inr ((Finset.inf_le hO).trans hOV)
-
-/-- Full Van Kampen plus a faithful test-cocone leg transfers simple
-connectivity of the ambient space to a path-connected cover member. -/
+/-- Full groupoid Van Kampen plus a faithful test-cocone leg transfers
+simple connectivity of the ambient space to a path-connected cover member. -/
 theorem simplyConnectedSpace_of_vankampen_faithful_leg
     (X : Type u₂) [TopologicalSpace X]
     (𝒰 : Set (Opens X))
@@ -243,8 +179,6 @@ theorem simplyConnectedSpace_of_vankampen_faithful_leg
   exact hthinU _ _
 
 #print axioms subsingleton_hom_of_isColimit_faithful_leg
-#print axioms basedTransportFunctor_map_injective
-#print axioms subordinateTwoCover_covers
-#print axioms subordinateTwoCover_finiteIntersections
+#print axioms simplyConnectedSpace_of_vankampen_faithful_leg
 LEAN
 "$HOME/.elan/bin/lake" env lean PoincareVanKampenFaithfulLeg.lean
