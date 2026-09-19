@@ -74,6 +74,31 @@ instance basedTransportFunctor_faithful
   map_injective {_ _} f g h := basedTransportMap_injective c p h
 
 #print axioms basedTransportMap_injective
+
+universe u₂
+
+variable {X : Type u₂} [TopologicalSpace X] [PathConnectedSpace X]
+
+/-- In a path-connected space, choose the standard Mathlib path from a
+basepoint to each object and obtain a faithful functor from the fundamental
+groupoid to the single-object category of the fundamental group. -/
+def fundamentalGroupoidBasedTransport (x₀ : X) :
+    FundamentalGroupoid X ⥤ SingleObj (FundamentalGroup X x₀) :=
+  basedTransportFunctor (FundamentalGroupoid.mk x₀)
+    (fun x => Path.Homotopic.Quotient.mk (PathConnectedSpace.somePath x₀ x.as))
+
+instance fundamentalGroupoidBasedTransport_faithful (x₀ : X) :
+    (fundamentalGroupoidBasedTransport x₀).Faithful := by
+  dsimp [fundamentalGroupoidBasedTransport]
+  infer_instance
+
+theorem fundamentalGroupoidBasedTransport_map_injective
+    (x₀ : X) {x y : FundamentalGroupoid X} :
+    Function.Injective
+      (fun f : x ⟶ y => (fundamentalGroupoidBasedTransport x₀).map f) :=
+  (fundamentalGroupoidBasedTransport x₀).map_injective
+
+#print axioms fundamentalGroupoidBasedTransport_map_injective
 LEAN
 
 lake env lean PoincareBasedTransport.lean
