@@ -7,6 +7,7 @@ on:
     paths:
       - diagnostics/PoincareVanKampenPushoutKernel.lean
       - diagnostics/PoincareTwoOpenCoverKernel.lean
+      - diagnostics/PoincareULiftPushoutProbe.lean
       - diagnostics/run-poincare-pushout-kernel-target-pin.sh
       - .github/workflows/poincare-pushout-kernel-target-pin.yml
 
