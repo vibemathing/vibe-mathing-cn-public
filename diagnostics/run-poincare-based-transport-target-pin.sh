@@ -75,6 +75,40 @@ instance basedTransportFunctor_faithful
 
 #print axioms basedTransportMap_injective
 
+/-- On a thin groupoid, every based transport value is the identity
+endomorphism of the chosen base object. -/
+theorem basedTransportMap_eq_one_of_subsingleton
+    (c : C) (p : ∀ x : C, c ⟶ x)
+    (hthin : ∀ x y : C, Subsingleton (x ⟶ y))
+    {x y : C} (f : x ⟶ y) :
+    basedTransportMap c p f = (1 : End c) :=
+  @Subsingleton.elim _ (hthin c c) _ _
+
+universe u' v'
+
+variable {D : Type u'} [Groupoid.{v'} D]
+
+/-- If chosen base arrows are compatible with a functor, then thinness of the
+source groupoid makes the transported image of every source morphism trivial
+in the target vertex group. -/
+theorem basedTransportMap_map_eq_one_of_subsingleton
+    (F : C ⥤ D) (c : C)
+    (pC : ∀ x : C, c ⟶ x)
+    (pD : ∀ y : D, F.obj c ⟶ y)
+    (hcompat : ∀ x : C, pD (F.obj x) = F.map (pC x))
+    (hthin : ∀ x y : C, Subsingleton (x ⟶ y))
+    {x y : C} (f : x ⟶ y) :
+    basedTransportMap (F.obj c) pD (F.map f) =
+      (1 : End (F.obj c)) := by
+  have hC := basedTransportMap_eq_one_of_subsingleton c pC hthin f
+  have hF := congrArg F.map hC
+  simp only [basedTransportMap] at hF ⊢
+  rw [hcompat x, hcompat y]
+  simpa only [Functor.map_comp, Functor.map_id, Functor.map_inv] using hF
+
+#print axioms basedTransportMap_eq_one_of_subsingleton
+#print axioms basedTransportMap_map_eq_one_of_subsingleton
+
 universe u₂
 
 variable {X : Type u₂} [TopologicalSpace X] [PathConnectedSpace X]
