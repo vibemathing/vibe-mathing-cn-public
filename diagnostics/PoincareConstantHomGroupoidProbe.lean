@@ -29,8 +29,10 @@ instance constantHomGroupoidGroupoid
     (O : Type u) (G : Type v) [Group G] :
     Groupoid.{v} (ConstantHomGroupoid O G) where
   inv f := f⁻¹
-  inv_comp f := by simp
-  comp_inv f := by simp
+  inv_comp f := by
+    exact mul_inv_cancel f
+  comp_inv f := by
+    exact inv_mul_cancel f
 
 /-- Package the constant-hom construction as an object of `Grpd`. -/
 abbrev constantHomGrpd (O : Type u) (G : Type v) [Group G] : Grpd.{v, u} :=
