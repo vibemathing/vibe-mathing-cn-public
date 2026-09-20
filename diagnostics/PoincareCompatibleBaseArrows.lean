@@ -35,10 +35,17 @@ theorem extendBaseArrows_obj
   simp only [extendBaseArrows]
   split
   · rename_i h
-    have ha : Classical.choose h = a :=
-      hobj (Classical.choose_spec h)
-    subst a
-    simp
+    let a' := Classical.choose h
+    have hFa : F.obj a' = F.obj a := Classical.choose_spec h
+    have ha : a' = a := hobj hFa
+    have hp {x y : A} (e : x = y) :
+        p x ≫ eqToHom e = p y := by
+      cases e
+      simp
+    have hproof :
+        hFa = congrArg F.obj ha := Subsingleton.elim _ _
+    change F.map (p a') ≫ eqToHom hFa = F.map (p a)
+    rw [hproof, ← eqToHom_map, ← Functor.map_comp, hp ha]
   · rename_i h
     exact (h ⟨a, rfl⟩).elim
 
