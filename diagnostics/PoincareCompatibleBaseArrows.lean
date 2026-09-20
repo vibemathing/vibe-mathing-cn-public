@@ -45,7 +45,16 @@ theorem extendBaseArrows_obj
     have hproof :
         hFa = congrArg F.obj ha := Subsingleton.elim _ _
     change F.map (p a') ≫ eqToHom hFa = F.map (p a)
-    rw [hproof, ← eqToHom_map, ← Functor.map_comp, hp ha]
+    calc
+      F.map (p a') ≫ eqToHom hFa =
+          F.map (p a') ≫ eqToHom (congrArg F.obj ha) := by
+            rw [hproof]
+      _ = F.map (p a') ≫ F.map (eqToHom ha) := by
+            rw [eqToHom_map F ha]
+      _ = F.map (p a' ≫ eqToHom ha) := by
+            rw [Functor.map_comp]
+      _ = F.map (p a) := by
+            rw [hp ha]
   · rename_i h
     exact (h ⟨a, rfl⟩).elim
 
