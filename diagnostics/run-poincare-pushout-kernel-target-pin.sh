@@ -29,6 +29,7 @@ cp "$HARNESS_ROOT/diagnostics/PoincareVanKampenPushoutKernel.lean" .
 cp "$HARNESS_ROOT/diagnostics/PoincareULiftPushoutProbe.lean" .
 cp "$HARNESS_ROOT/diagnostics/PoincareConstantHomGroupoidProbe.lean" .
 cp "$HARNESS_ROOT/diagnostics/PoincareCompatibleBaseArrows.lean" .
+cp "$HARNESS_ROOT/diagnostics/PoincareTwoOpenCoverKernel.lean" .
 cp "$HARNESS_ROOT/diagnostics/PoincareTwoOpenPushoutCocone.lean" .
 cp "$HARNESS_ROOT/diagnostics/PoincareTwoOpenPushoutFaithful.lean" .
 lake env lean -o PoincareVanKampenPushoutKernel.olean PoincareVanKampenPushoutKernel.lean
@@ -40,6 +41,7 @@ lake env lean -o PoincareConstantHomGroupoidProbe.olean PoincareConstantHomGroup
 cp PoincareConstantHomGroupoidProbe.olean .lake/build/lib/lean/
 lake env lean -o PoincareCompatibleBaseArrows.olean PoincareCompatibleBaseArrows.lean
 cp PoincareCompatibleBaseArrows.olean .lake/build/lib/lean/
+lake env lean PoincareTwoOpenCoverKernel.lean
 lake env lean -o PoincareTwoOpenPushoutCocone.olean PoincareTwoOpenPushoutCocone.lean
 cp PoincareTwoOpenPushoutCocone.olean .lake/build/lib/lean/
 lake env lean PoincareTwoOpenPushoutFaithful.lean
