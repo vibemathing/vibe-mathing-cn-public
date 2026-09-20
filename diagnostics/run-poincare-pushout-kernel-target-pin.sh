@@ -38,7 +38,6 @@ mkdir -p .lake/build/lib/lean
 cp PoincareVanKampenPushoutKernel.olean .lake/build/lib/lean/
 lake env lean -o PoincareConstantHomGroupoidProbe.olean PoincareConstantHomGroupoidProbe.lean
 cp PoincareConstantHomGroupoidProbe.olean .lake/build/lib/lean/
-lake env lean PoincareULiftPushoutProbe.lean
 lake env lean -o PoincareCompatibleBaseArrows.olean PoincareCompatibleBaseArrows.lean
 cp PoincareCompatibleBaseArrows.olean .lake/build/lib/lean/
 lake env lean -o PoincareTwoOpenPushoutCocone.olean PoincareTwoOpenPushoutCocone.lean
