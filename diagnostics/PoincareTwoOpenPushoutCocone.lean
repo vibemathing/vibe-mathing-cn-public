@@ -59,7 +59,11 @@ noncomputable def twoOpenPushoutTestCocone
     [PathConnectedSpace (U ⊓ V)]
     [PathConnectedSpace U] [PathConnectedSpace V]
     (w₀ : U ⊓ V) :
-    PushoutCocone (overlapLeftFunctor U V) (overlapRightFunctor U V) := by
+    PushoutCocone
+      (show Grpd.of (FundamentalGroupoid (U ⊓ V)) ⟶
+          Grpd.of (FundamentalGroupoid U) from overlapLeftFunctor U V)
+      (show Grpd.of (FundamentalGroupoid (U ⊓ V)) ⟶
+          Grpd.of (FundamentalGroupoid V) from overlapRightFunctor U V) := by
   let FL := overlapLeftFunctor U V
   let FR := overlapRightFunctor U V
   let cW : FundamentalGroupoid (U ⊓ V) := FundamentalGroupoid.mk w₀
@@ -87,11 +91,13 @@ noncomputable def twoOpenPushoutTestCocone
     | false => FL.mapEnd cW
     | true => FR.mapEnd cW
   let P := Monoid.PushoutI φ
-  let leftLeg : FundamentalGroupoid U ⥤ ConstantHomGroupoid X P :=
+  let leftLeg :
+      Grpd.of (FundamentalGroupoid U) ⟶ constantHomGrpd X P :=
     basedTransportToConstantHom
       (fun x => ((x.as : U) : X)) cU pU
       (Monoid.PushoutI.of (φ := φ) false)
-  let rightLeg : FundamentalGroupoid V ⥤ ConstantHomGroupoid X P :=
+  let rightLeg :
+      Grpd.of (FundamentalGroupoid V) ⟶ constantHomGrpd X P :=
     basedTransportToConstantHom
       (fun x => ((x.as : V) : X)) cV pV
       (Monoid.PushoutI.of (φ := φ) true)
