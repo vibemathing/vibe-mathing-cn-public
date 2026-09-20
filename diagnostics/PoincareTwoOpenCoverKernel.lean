@@ -1,4 +1,4 @@
-import Mathlib.Topology.Category.TopCat.Basic
+import Mathlib.Topology.Category.TopCat.Opens
 
 open TopologicalSpace
 
