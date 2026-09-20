@@ -35,7 +35,7 @@ theorem extendBaseArrows_obj
   · rename_i h
     have ha : Classical.choose h = a :=
       hobj (Classical.choose_spec h)
-    subst ha
+    cases ha
     simp
   · rename_i h
     exact (h ⟨a, rfl⟩).elim
