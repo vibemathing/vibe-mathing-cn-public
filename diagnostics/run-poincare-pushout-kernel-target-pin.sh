@@ -28,6 +28,7 @@ lake exe cache get
 cp "$HARNESS_ROOT/diagnostics/PoincareVanKampenPushoutKernel.lean" .
 cp "$HARNESS_ROOT/diagnostics/PoincareULiftPushoutProbe.lean" .
 cp "$HARNESS_ROOT/diagnostics/PoincareConstantHomGroupoidProbe.lean" .
+cp "$HARNESS_ROOT/diagnostics/PoincareCompatibleBaseArrows.lean" .
 lake env lean -o PoincareVanKampenPushoutKernel.olean PoincareVanKampenPushoutKernel.lean
 # Local probe modules import the kernel by module name.  Install the freshly
 # checked olean into Lake's project search path before compiling dependents.
@@ -35,3 +36,4 @@ mkdir -p .lake/build/lib/lean
 cp PoincareVanKampenPushoutKernel.olean .lake/build/lib/lean/
 lake env lean PoincareConstantHomGroupoidProbe.lean
 lake env lean PoincareULiftPushoutProbe.lean
+lake env lean PoincareCompatibleBaseArrows.lean
