@@ -13,12 +13,13 @@ noncomputable def extendBaseArrows
     (p : ∀ a : A, c ⟶ a)
     (fallback : ∀ b : B, F.obj c ⟶ b)
     (hobj : Function.Injective F.obj) :
-    ∀ b : B, F.obj c ⟶ b :=
-  fun b =>
-    if h : ∃ a : A, F.obj a = b then
-      F.map (p (Classical.choose h)) ≫ eqToHom (Classical.choose_spec h)
-    else
-      fallback b
+    ∀ b : B, F.obj c ⟶ b := by
+  classical
+  intro b
+  exact if h : ∃ a : A, F.obj a = b then
+    F.map (p (Classical.choose h)) ≫ eqToHom (Classical.choose_spec h)
+  else
+    fallback b
 
 /-- On the image of the object map, `extendBaseArrows` agrees with the
 functorially mapped source base arrows. -/
@@ -30,7 +31,8 @@ theorem extendBaseArrows_obj
     (hobj : Function.Injective F.obj)
     (a : A) :
     extendBaseArrows F c p fallback hobj (F.obj a) = F.map (p a) := by
-  rw [extendBaseArrows]
+  classical
+  simp only [extendBaseArrows]
   split
   · rename_i h
     have ha : Classical.choose h = a :=
@@ -55,7 +57,7 @@ theorem basedTransportMap_map_extend
       F.map (basedTransportMap c p f) := by
   rw [basedTransportMap, extendBaseArrows_obj, extendBaseArrows_obj]
   rw [basedTransportMap]
-  simp only [Functor.map_comp, Functor.map_inv]
+  simp only [Functor.map_comp, Groupoid.inv_eq_inv, Functor.map_inv]
 
 /-- The previous compatibility can be stated as compatibility with the induced
 endomorphism-group homomorphism. -/
