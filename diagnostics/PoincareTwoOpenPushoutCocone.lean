@@ -42,13 +42,13 @@ noncomputable def fundamentalGroupoidBaseArrows
 
 /-- Left inclusion of the overlap of a two-open cover. -/
 abbrev overlapLeftFunctor (U V : Opens X) :
-    FundamentalGroupoid (U ⊓ V) ⥤ FundamentalGroupoid U :=
-  opensFundamentalGroupoidInclusion (show U ⊓ V ≤ U from inf_le_left)
+    FundamentalGroupoid (U ⊓ V : Opens X) ⥤ FundamentalGroupoid U :=
+  opensFundamentalGroupoidInclusion (show (U ⊓ V : Opens X) ≤ U from inf_le_left)
 
 /-- Right inclusion of the overlap of a two-open cover. -/
 abbrev overlapRightFunctor (U V : Opens X) :
-    FundamentalGroupoid (U ⊓ V) ⥤ FundamentalGroupoid V :=
-  opensFundamentalGroupoidInclusion (show U ⊓ V ≤ V from inf_le_right)
+    FundamentalGroupoid (U ⊓ V : Opens X) ⥤ FundamentalGroupoid V :=
+  opensFundamentalGroupoidInclusion (show (U ⊓ V : Opens X) ≤ V from inf_le_right)
 
 /-- A strict pushout test cocone for the fundamental-groupoid span of two
 path-connected opens.  The hom group is the amalgamated pushout of the two
@@ -56,17 +56,17 @@ vertex groups over the overlap vertex group; the object type is the ambient
 space itself, so both overlap object maps agree strictly. -/
 noncomputable def twoOpenPushoutTestCocone
     (U V : Opens X)
-    [PathConnectedSpace (U ⊓ V)]
+    [PathConnectedSpace (U ⊓ V : Opens X)]
     [PathConnectedSpace U] [PathConnectedSpace V]
-    (w₀ : U ⊓ V) :
+    (w₀ : (U ⊓ V : Opens X)) :
     PushoutCocone
-      (show Grpd.of (FundamentalGroupoid (U ⊓ V)) ⟶
+      (show Grpd.of (FundamentalGroupoid (U ⊓ V : Opens X)) ⟶
           Grpd.of (FundamentalGroupoid U) from overlapLeftFunctor U V)
-      (show Grpd.of (FundamentalGroupoid (U ⊓ V)) ⟶
+      (show Grpd.of (FundamentalGroupoid (U ⊓ V : Opens X)) ⟶
           Grpd.of (FundamentalGroupoid V) from overlapRightFunctor U V) := by
   let FL := overlapLeftFunctor U V
   let FR := overlapRightFunctor U V
-  let cW : FundamentalGroupoid (U ⊓ V) := FundamentalGroupoid.mk w₀
+  let cW : FundamentalGroupoid (U ⊓ V : Opens X) := FundamentalGroupoid.mk w₀
   let pW := fundamentalGroupoidBaseArrows cW
   let cU := FL.obj cW
   let cV := FR.obj cW
@@ -74,10 +74,10 @@ noncomputable def twoOpenPushoutTestCocone
   let fallbackV := fundamentalGroupoidBaseArrows cV
   let hobjU : Function.Injective FL.obj :=
     opensFundamentalGroupoidInclusion_obj_injective
-      (show U ⊓ V ≤ U from inf_le_left)
+      (show (U ⊓ V : Opens X) ≤ U from inf_le_left)
   let hobjV : Function.Injective FR.obj :=
     opensFundamentalGroupoidInclusion_obj_injective
-      (show U ⊓ V ≤ V from inf_le_right)
+      (show (U ⊓ V : Opens X) ≤ V from inf_le_right)
   let pU := extendBaseArrows FL cW pW fallbackU hobjU
   let pV := extendBaseArrows FR cW pW fallbackV hobjV
   let G : Bool → Type u := fun b =>
