@@ -102,6 +102,7 @@ noncomputable def twoOpenPushoutTestCocone
       (fun x => ((x.as : V) : X)) cV pV
       (Monoid.PushoutI.of (φ := φ) true)
   refine PushoutCocone.mk leftLeg rightLeg ?_
+  rw [Grpd.comp_eq_comp, Grpd.comp_eq_comp]
   apply Functor.ext
   · intro x
     rfl
